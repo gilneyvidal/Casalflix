@@ -16,6 +16,132 @@ body {
 }
 
 a { color: #fff; text-decoration: none; }
+.hidden { display: none !important; }
+
+/* ============================================================
+   SPLASH (abertura)
+   ============================================================ */
+.splash {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.8s ease;
+}
+.splash.fade-out { opacity: 0; pointer-events: none; }
+
+.splash-text {
+    color: var(--primary-color);
+    font-size: clamp(2.5rem, 10vw, 7rem);
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-shadow: 0 0 40px rgba(229, 9, 20, 0.9), 0 0 80px rgba(229, 9, 20, 0.5);
+    opacity: 0;
+    animation: splashIntro 3.5s ease-out forwards;
+}
+
+@keyframes splashIntro {
+    0%   { opacity: 0; transform: scale(2.6); filter: blur(30px); letter-spacing: 0.6em; }
+    35%  { opacity: 1; transform: scale(1);   filter: blur(0);    letter-spacing: 0.15em; }
+    70%  { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.05); filter: blur(8px); }
+}
+
+/* ============================================================
+   SELEÇÃO DE PERFIL
+   ============================================================ */
+.profile-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    gap: 50px;
+    animation: fadeInScreen 0.6s ease-out;
+}
+
+@keyframes fadeInScreen {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.profiles-title {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 700;
+    text-align: center;
+    color: #fff;
+}
+
+.profiles-grid {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 900px;
+}
+
+.profile-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    width: 150px;
+}
+.profile-card:hover { transform: scale(1.06); }
+
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 3px solid transparent;
+    transition: border-color 0.2s;
+    background: linear-gradient(135deg, #333, #555);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #fff;
+    text-transform: uppercase;
+}
+.profile-card:hover .profile-avatar { border-color: #fff; }
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-name {
+    color: #808080;
+    font-size: 1.1rem;
+    font-weight: 400;
+    transition: color 0.2s;
+    text-align: center;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.profile-card:hover .profile-name { color: #fff; }
+
+.profile-footer {
+    margin-top: 30px;
+    text-align: center;
+}
+
+/* ============================================================
+   APLICAÇÃO PRINCIPAL
+   ============================================================ */
+.app { animation: fadeInScreen 0.6s ease-out; }
 
 /* Cabeçalho */
 .header {
@@ -29,12 +155,43 @@ a { color: #fff; text-decoration: none; }
 }
 .header.scrolled { background-color: #141414; }
 
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .logo {
     color: var(--primary-color);
     font-size: 2rem;
     font-weight: 900;
     letter-spacing: 2px;
 }
+
+.header-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.header-user:hover { opacity: 0.8; }
+
+.header-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #333, #555);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    color: #fff;
+    overflow: hidden;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+.header-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
 /* Hero */
 .hero {
@@ -46,6 +203,7 @@ a { color: #fff; text-decoration: none; }
     display: flex;
     align-items: flex-end;
     padding: 0 4% 100px 4%;
+    overflow: hidden;
 }
 .hero::after {
     content: '';
@@ -55,11 +213,23 @@ a { color: #fff; text-decoration: none; }
         linear-gradient(to top, #141414 5%, rgba(20,20,20,0.8) 30%, rgba(20,20,20,0) 60%),
         linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%);
     pointer-events: none;
+    z-index: 1;
 }
+
+.hero-bg-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+}
+
 .hero-content { position: relative; z-index: 10; max-width: 600px; }
 
 .hero-title {
-    font-size: 4rem;
+    font-size: clamp(2rem, 5vw, 4rem);
     font-weight: 900;
     margin-bottom: 15px;
     text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
@@ -215,9 +385,12 @@ a { color: #fff; text-decoration: none; }
 
 /* Responsividade */
 @media (max-width: 768px) {
-    .hero-title { font-size: 2.5rem; }
     .hero-description { font-size: 1rem; }
     .logo { font-size: 1.5rem; }
     .poster-card { width: 160px; }
     .row-title { font-size: 1.2rem; }
+    .profile-avatar { width: 110px; height: 110px; font-size: 2.5rem; }
+    .profile-card { width: 110px; }
+    .profile-name { font-size: 0.95rem; max-width: 110px; }
+    .profiles-grid { gap: 20px; }
 }
