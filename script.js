@@ -4,7 +4,7 @@
 // IMPORTANTE: substitua pelos seus dados do Supabase
 // ===================================================================
 const SUPABASE_URL = 'COLE_AQUI_A_SUA_PROJECT_URL';
-const SUPABASE_ANON_KEY = 'COLE_AQUI_A_SUA_CHAVE_ANON_PUBLIC';
+const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtnaG9md2ZrcWt5cWtxd2xvb3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzMTMxMjMsImV4cCI6MjEwNDg4OTEyM30.g_ouJmp2nr194XV3uQr4c77QkNL1wJ-RealwNFWOJOE;
 const BUCKET_NAME = 'midias-casal';
 // ===================================================================
 
