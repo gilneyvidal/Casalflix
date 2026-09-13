@@ -4,13 +4,14 @@
 const SUPABASE_URL = 'https://kghofwfkqkyqkqwlooub.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtnaG9md2ZrcWt5cWtxd2xvb3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzMTMxMjMsImV4cCI6MjEwNDg4OTEyM30.g_ouJmp2nr194XV3uQr4c77QkNL1wJ-RealwNFWOJOE';
 const BUCKET_NAME = 'midias-casal';
+const AVATAR_BUCKET = 'avatars';
 // ===================================================================
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Elementos
+// ---- Elementos ----
 const loginScreen = document.getElementById('login-screen');
 const adminPanel = document.getElementById('admin-panel');
 const loginForm = document.getElementById('login-form');
@@ -32,11 +33,22 @@ const categoriesList = document.getElementById('categories-list');
 const categoryForm = document.getElementById('category-form');
 const newCategoryName = document.getElementById('new-category-name');
 
+const profilesList = document.getElementById('profiles-list');
+const profileForm = document.getElementById('profile-form');
+const newProfileName = document.getElementById('new-profile-name');
+
+const splashForm = document.getElementById('splash-form');
+const splashEnabledInput = document.getElementById('splash-enabled');
+const splashTextInput = document.getElementById('splash-text-input');
+const splashDurationInput = document.getElementById('splash-duration-input');
+const splashStatus = document.getElementById('splash-status');
+
 const settingsForm = document.getElementById('settings-form');
 const settingsStatus = document.getElementById('settings-status');
 
 const VIDEO_EXTENSIONS = ['mp4', 'webm', 'ogg', 'mov', 'm4v'];
 let categoriesCache = [];
+let profilesCache = [];
 
 // ===================================================================
 // AUTENTICAÇÃO
@@ -95,6 +107,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // ===================================================================
 async function refreshAll() {
     await loadCategories();
+    await loadProfiles();
     await loadMediaList();
     await loadSettings();
 }
@@ -164,7 +177,165 @@ categoryForm.addEventListener('submit', async (e) => {
 });
 
 // ===================================================================
-// UPLOAD
+// PERFIS
+// ===================================================================
+async function loadProfiles() {
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('display_order', { ascending: true });
+
+    if (error) {
+        console.error('Erro ao carregar perfis:', error);
+        return;
+    }
+
+    profilesCache = data || [];
+    profilesList.innerHTML = '';
+
+    profilesCache.forEach(profile => {
+        const item = document.createElement('div');
+        item.className = 'profile-admin-item';
+
+        // Avatar
+        const avatar = document.createElement('label');
+        avatar.className = 'profile-admin-avatar';
+
+        if (profile.avatar_url) {
+            const img = document.createElement('img');
+            img.src = profile.avatar_url;
+            img.alt = profile.name;
+            avatar.appendChild(img);
+        } else {
+            avatar.textContent = (profile.name || '?').charAt(0);
+        }
+
+        const hint = document.createElement('div');
+        hint.className = 'overlay-hint';
+        hint.textContent = 'Trocar foto';
+        avatar.appendChild(hint);
+
+        const fileInputEl = document.createElement('input');
+        fileInputEl.type = 'file';
+        fileInputEl.accept = 'image/*';
+        fileInputEl.addEventListener('change', (e) => uploadAvatar(profile, e.target.files[0]));
+        avatar.appendChild(fileInputEl);
+
+        // Nome
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.value = profile.name;
+        nameInput.placeholder = 'Nome do perfil';
+
+        // Ações
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'btn-small btn-save';
+        saveBtn.textContent = 'Salvar';
+        saveBtn.onclick = async () => {
+            const newName = nameInput.value.trim();
+            if (!newName) return;
+            const { error } = await supabase
+                .from('profiles')
+                .update({ name: newName })
+                .eq('id', profile.id);
+            if (error) alert('Erro: ' + error.message);
+            else { await loadProfiles(); }
+        };
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn-small btn-delete';
+        delBtn.textContent = 'Excluir';
+        delBtn.onclick = async () => {
+            if (profilesCache.length <= 1) {
+                alert('É preciso ter pelo menos 1 perfil.');
+                return;
+            }
+            if (!confirm(`Excluir o perfil "${profile.name}"?`)) return;
+            const { error } = await supabase.from('profiles').delete().eq('id', profile.id);
+            if (error) alert('Erro: ' + error.message);
+            else await loadProfiles();
+        };
+
+        actions.appendChild(saveBtn);
+        actions.appendChild(delBtn);
+
+        item.appendChild(avatar);
+        item.appendChild(nameInput);
+        item.appendChild(actions);
+        profilesList.appendChild(item);
+    });
+}
+
+async function uploadAvatar(profile, file) {
+    if (!file) return;
+
+    const ext = file.name.split('.').pop();
+    const uniqueName = `${profile.id}_${Date.now()}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+        .from(AVATAR_BUCKET)
+        .upload(uniqueName, file, { cacheControl: '3600', upsert: true });
+
+    if (uploadError) {
+        alert('Erro ao enviar avatar: ' + uploadError.message);
+        return;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+        .from(AVATAR_BUCKET)
+        .getPublicUrl(uniqueName);
+
+    const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', profile.id);
+
+    if (updateError) {
+        alert('Erro ao salvar avatar: ' + updateError.message);
+        return;
+    }
+
+    await loadProfiles();
+}
+
+profileForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = newProfileName.value.trim();
+    if (!name) return;
+    const last = profilesCache[profilesCache.length - 1];
+    const order = (last ? last.display_order : 0) + 1;
+    const { error } = await supabase.from('profiles').insert({ name, display_order: order });
+    if (error) alert('Erro: ' + error.message);
+    else { newProfileName.value = ''; await loadProfiles(); }
+});
+
+// ===================================================================
+// SPLASH
+// ===================================================================
+splashForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const payload = {
+        splash_enabled: splashEnabledInput.checked,
+        splash_text: splashTextInput.value.trim() || 'NOSSOFLIX',
+        splash_duration: parseInt(splashDurationInput.value, 10) || 3500
+    };
+
+    const { error } = await supabase.from('site_settings').update(payload).eq('id', 1);
+
+    if (error) {
+        splashStatus.textContent = '❌ Erro ao salvar: ' + error.message;
+    } else {
+        splashStatus.textContent = '✅ Abertura salva!';
+        setTimeout(() => splashStatus.textContent = '', 3000);
+    }
+});
+
+// ===================================================================
+// UPLOAD DE MÍDIAS
 // ===================================================================
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -295,7 +466,7 @@ async function loadMediaList() {
         featuredCheck.type = 'checkbox';
         featuredCheck.checked = !!meta.is_featured;
         featuredLabel.appendChild(featuredCheck);
-        featuredLabel.appendChild(document.createTextNode('Marcar como destaque do hero'));
+        featuredLabel.appendChild(document.createTextNode('★ Destaque do hero (só 1)'));
         body.appendChild(featuredLabel);
 
         const fileNameEl = document.createElement('div');
@@ -334,6 +505,14 @@ async function saveMediaMeta(fileName, data) {
     const exists = data.exists;
     delete data.exists;
 
+    // Se está marcando como destaque, desmarca todos os outros
+    if (data.is_featured) {
+        await supabase
+            .from('media_items')
+            .update({ is_featured: false })
+            .neq('file_name', fileName);
+    }
+
     let error;
     if (exists) {
         ({ error } = await supabase.from('media_items').update(data).eq('file_name', fileName));
@@ -362,7 +541,7 @@ async function deleteMedia(fileName) {
 }
 
 // ===================================================================
-// CONFIGURAÇÕES DO SITE
+// CONFIGURAÇÕES GERAIS
 // ===================================================================
 async function loadSettings() {
     const { data, error } = await supabase
@@ -373,8 +552,14 @@ async function loadSettings() {
     document.getElementById('site-title').value = data.site_title || '';
     document.getElementById('hero-title-text').value = data.hero_title || '';
     document.getElementById('hero-description-text').value = data.hero_description || '';
+    document.getElementById('profiles-title').value = data.profiles_title || '';
     document.getElementById('primary-color').value = data.primary_color || '#e50914';
     document.getElementById('footer-text-input').value = data.footer_text || '';
+
+    // Splash
+    splashEnabledInput.checked = data.splash_enabled !== false;
+    splashTextInput.value = data.splash_text || 'NOSSOFLIX';
+    splashDurationInput.value = data.splash_duration || 3500;
 }
 
 settingsForm.addEventListener('submit', async (e) => {
@@ -384,6 +569,7 @@ settingsForm.addEventListener('submit', async (e) => {
         site_title: document.getElementById('site-title').value.trim(),
         hero_title: document.getElementById('hero-title-text').value.trim(),
         hero_description: document.getElementById('hero-description-text').value.trim(),
+        profiles_title: document.getElementById('profiles-title').value.trim() || 'Quem está assistindo?',
         primary_color: document.getElementById('primary-color').value,
         footer_text: document.getElementById('footer-text-input').value.trim()
     };
@@ -397,3 +583,6 @@ settingsForm.addEventListener('submit', async (e) => {
         setTimeout(() => settingsStatus.textContent = '', 3000);
     }
 });
+```
+
+---
