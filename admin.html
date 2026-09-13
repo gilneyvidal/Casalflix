@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel ADM - Nossoflix</title>
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- TELA DE LOGIN -->
+    <div id="login-screen" class="screen">
+        <div class="login-container">
+            <h1 class="logo">NOSSOFLIX <span>ADM</span></h1>
+            <p>Acesso restrito</p>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" placeholder="seu@email.com" required autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-primary">Entrar</button>
+                <div id="login-error" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PAINEL -->
+    <div id="admin-panel" class="screen hidden">
+        <header class="admin-header">
+            <h1 class="logo">NOSSOFLIX <span>ADM</span></h1>
+            <div>
+                <span id="user-email" class="user-email"></span>
+                <button id="logout-btn" class="btn-logout">Sair</button>
+            </div>
+        </header>
+
+        <main class="admin-main">
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="upload">📤 Enviar</button>
+                <button class="tab-btn" data-tab="manage">🖼️ Gerenciar</button>
+                <button class="tab-btn" data-tab="categories">📂 Categorias</button>
+                <button class="tab-btn" data-tab="settings">🎨 Personalizar</button>
+            </nav>
+
+            <!-- ABA UPLOAD -->
+            <section class="tab-content active" id="tab-upload">
+                <h2>Enviar Nova Mídia</h2>
+                <p class="muted">Selecione um ou mais arquivos. Você pode enviar várias fotos/vídeos de uma vez.</p>
+                <form id="upload-form">
+                    <div class="input-group">
+                        <label for="file-input">Arquivos (fotos ou vídeos)</label>
+                        <input type="file" id="file-input" multiple accept="image/*,video/*" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="upload-category">Categoria (fileira)</label>
+                        <select id="upload-category"></select>
+                    </div>
+                    <div class="input-group">
+                        <label for="upload-titles">Títulos (opcional)</label>
+                        <input type="text" id="upload-titles" placeholder="Ex: Primeira viagem, Nosso aniversário">
+                        <small class="muted">Separe por vírgula na mesma ordem dos arquivos.</small>
+                    </div>
+                    <button type="submit" class="btn-primary" id="upload-btn">Enviar Arquivos</button>
+                </form>
+                <div id="upload-progress" class="progress-container hidden">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div id="upload-status" class="status-message"></div>
+            </section>
+
+            <!-- ABA GERENCIAR -->
+            <section class="tab-content" id="tab-manage">
+                <h2>Gerenciar Mídias</h2>
+                <p class="muted">Edite títulos, mude categorias, marque como destaque ou exclua.</p>
+                <div id="media-list-container">
+                    <p>Carregando mídias...</p>
+                </div>
+            </section>
+
+            <!-- ABA CATEGORIAS -->
+            <section class="tab-content" id="tab-categories">
+                <h2>Categorias (Fileiras)</h2>
+                <p class="muted">As categorias viram as "fileiras" horizontais do site.</p>
+                <form id="category-form" class="inline-form">
+                    <input type="text" id="new-category-name" placeholder="Nome da nova categoria" required>
+                    <button type="submit" class="btn-primary">Adicionar</button>
+                </form>
+                <div id="categories-list"></div>
+            </section>
+
+            <!-- ABA PERSONALIZAR -->
+            <section class="tab-content" id="tab-settings">
+                <h2>Personalização do Site</h2>
+                <form id="settings-form">
+                    <div class="input-group">
+                        <label for="site-title">Título do Site (Logo)</label>
+                        <input type="text" id="site-title">
+                    </div>
+                    <div class="input-group">
+                        <label for="hero-title-text">Título do Destaque (Hero)</label>
+                        <input type="text" id="hero-title-text">
+                    </div>
+                    <div class="input-group">
+                        <label for="hero-description-text">Descrição do Destaque</label>
+                        <textarea id="hero-description-text" rows="3"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="primary-color">Cor Principal</label>
+                        <input type="color" id="primary-color">
+                    </div>
+                    <div class="input-group">
+                        <label for="footer-text-input">Texto do Rodapé</label>
+                        <input type="text" id="footer-text-input">
+                    </div>
+                    <button type="submit" class="btn-primary">Salvar Personalizações</button>
+                    <div id="settings-status" class="status-message"></div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="admin.js"></script>
+</body>
+</html>
