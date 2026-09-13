@@ -43,6 +43,8 @@
                 <button class="tab-btn active" data-tab="upload">📤 Enviar</button>
                 <button class="tab-btn" data-tab="manage">🖼️ Gerenciar</button>
                 <button class="tab-btn" data-tab="categories">📂 Categorias</button>
+                <button class="tab-btn" data-tab="profiles">👥 Perfis</button>
+                <button class="tab-btn" data-tab="splash">🎬 Abertura</button>
                 <button class="tab-btn" data-tab="settings">🎨 Personalizar</button>
             </nav>
 
@@ -75,7 +77,11 @@
             <!-- ABA GERENCIAR -->
             <section class="tab-content" id="tab-manage">
                 <h2>Gerenciar Mídias</h2>
-                <p class="muted">Edite títulos, mude categorias, marque como destaque ou exclua.</p>
+                <p class="muted">
+                    Edite títulos, mude categorias, marque <strong>★ DESTAQUE</strong> e exclua.<br>
+                    💡 <strong>Vídeo principal do site:</strong> marque <strong>apenas um</strong> item como "Destaque do hero". 
+                    Se for um vídeo, ele roda automaticamente como plano de fundo; se for foto, vira o plano de fundo fixo.
+                </p>
                 <div id="media-list-container">
                     <p>Carregando mídias...</p>
                 </div>
@@ -92,21 +98,67 @@
                 <div id="categories-list"></div>
             </section>
 
+            <!-- ABA PERFIS -->
+            <section class="tab-content" id="tab-profiles">
+                <h2>Perfis (tela inicial)</h2>
+                <p class="muted">
+                    Cada perfil vira um card na tela "Quem está assistindo?". A foto é opcional — 
+                    se não tiver, aparece a inicial do nome.
+                </p>
+                <form id="profile-form" class="inline-form">
+                    <input type="text" id="new-profile-name" placeholder="Nome do novo perfil" required>
+                    <button type="submit" class="btn-primary">Adicionar Perfil</button>
+                </form>
+                <div id="profiles-list" class="profiles-admin-grid"></div>
+            </section>
+
+            <!-- ABA SPLASH -->
+            <section class="tab-content" id="tab-splash">
+                <h2>Abertura do Site (Splash)</h2>
+                <p class="muted">
+                    Aquela animação que aparece antes da seleção de perfis. Personalize o texto e a duração.
+                </p>
+                <form id="splash-form">
+                    <div class="input-group">
+                        <label>
+                            <input type="checkbox" id="splash-enabled"> Mostrar abertura animada ao entrar no site
+                        </label>
+                    </div>
+                    <div class="input-group">
+                        <label for="splash-text-input">Texto da Abertura</label>
+                        <input type="text" id="splash-text-input" maxlength="30" placeholder="NOSSOFLIX">
+                        <small class="muted">Recomendado: até 12 caracteres para não quebrar o layout.</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="splash-duration-input">Duração (milissegundos)</label>
+                        <input type="number" id="splash-duration-input" min="1500" max="8000" step="100">
+                        <small class="muted">Recomendado: entre 2500 e 4500 ms.</small>
+                    </div>
+                    <button type="submit" class="btn-primary">Salvar Abertura</button>
+                    <div id="splash-status" class="status-message"></div>
+                </form>
+            </section>
+
             <!-- ABA PERSONALIZAR -->
             <section class="tab-content" id="tab-settings">
-                <h2>Personalização do Site</h2>
+                <h2>Personalização Geral do Site</h2>
                 <form id="settings-form">
                     <div class="input-group">
                         <label for="site-title">Título do Site (Logo)</label>
                         <input type="text" id="site-title">
                     </div>
                     <div class="input-group">
-                        <label for="hero-title-text">Título do Destaque (Hero)</label>
+                        <label for="hero-title-text">Título do Destaque (Hero) — padrão</label>
                         <input type="text" id="hero-title-text">
+                        <small class="muted">Usado apenas quando a mídia em destaque não tem título próprio.</small>
                     </div>
                     <div class="input-group">
-                        <label for="hero-description-text">Descrição do Destaque</label>
+                        <label for="hero-description-text">Descrição do Destaque — padrão</label>
                         <textarea id="hero-description-text" rows="3"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="profiles-title">Título da tela de seleção de perfis</label>
+                        <input type="text" id="profiles-title">
                     </div>
                     <div class="input-group">
                         <label for="primary-color">Cor Principal</label>
