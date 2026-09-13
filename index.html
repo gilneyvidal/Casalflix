@@ -14,16 +14,25 @@
                         netflix: {
                             red: '#E50914',
                             dark: '#141414',
-                            gray: '#333333',
+                            gray: '#232323',
                             lightgray: '#808080'
                         }
+                    },
+                    fontFamily: {
+                        sans: ['"Inter"', 'sans-serif'],
+                        display: ['"Bebas Neue"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                        mono: ['"JetBrains Mono"', 'monospace']
                     }
                 }
             }
         }
     </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #141414; color: #ffffff; overflow-x: hidden; }
+        body { background-color: #141414; color: #ffffff; overflow-x: hidden; font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #141414; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
@@ -35,48 +44,48 @@
 <body class="bg-netflix-dark min-h-screen">
 
     <!-- HEADER / NAVBAR -->
-    <header id="navbar" class="fixed top-0 z-50 w-full transition-colors duration-500 bg-gradient-to-b from-black/80 to-transparent px-4 md:px-12 py-4 flex items-center justify-between">
-        <div class="flex items-center space-x-8">
-            <span class="text-netflix-red font-bold text-2xl md:text-3xl tracking-tighter cursor-pointer">CASALFLIX</span>
-            <nav class="hidden md:flex space-x-5 text-sm text-gray-300">
+    <header id="navbar" class="fixed top-0 z-50 w-full transition-colors duration-500 bg-gradient-to-b from-black/90 to-transparent px-4 md:px-12 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-10">
+            <span class="text-netflix-red font-display text-4xl tracking-wider cursor-pointer drop-shadow-md">CASALFLIX</span>
+            <nav class="hidden md:flex space-x-6 text-sm text-gray-300 font-medium tracking-wide">
                 <a href="#" class="hover:text-white transition font-semibold">Início</a>
                 <a href="#episodios" class="hover:text-white transition">Episódios & Momentos</a>
                 <a href="#galeria" class="hover:text-white transition">Nossa História</a>
             </nav>
         </div>
         <div class="flex items-center space-x-4">
-            <div class="flex items-center space-x-2 bg-black/40 px-3 py-1 rounded border border-white/10">
+            <div class="flex items-center space-x-2 bg-black/50 px-3 py-1.5 rounded-md border border-white/10 backdrop-blur-sm">
                 <!-- [SUPABASE / FOTO]: Substitua o link da foto do perfil se desejar -->
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Perfil" class="w-8 h-8 rounded object-cover">
-                <span class="text-sm font-medium hidden sm:inline">Monique & Gilney</span>
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Perfil" class="w-7 h-7 rounded object-cover">
+                <span class="text-xs font-semibold tracking-wide hidden sm:inline text-gray-200">Monique & Gilney</span>
             </div>
         </div>
     </header>
 
     <!-- BANNER PRINCIPAL (HERO) -->
-    <section class="relative h-[80vh] md:h-[90vh] w-full flex items-center">
+    <section class="relative h-[85vh] md:h-[92vh] w-full flex items-center">
         <!-- [SUPABASE / FOTO]: Substitua o link da imagem de fundo principal -->
         <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1920&q=80');">
-            <div class="absolute inset-0 bg-gradient-to-r from-netflix-dark via-netflix-dark/60 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-netflix-dark via-netflix-dark/70 to-transparent"></div>
             <div class="absolute inset-0 bg-gradient-to-t from-netflix-dark via-transparent to-black/60"></div>
         </div>
 
-        <div class="relative z-10 px-4 md:px-12 max-w-2xl mt-20 space-y-4">
-            <div class="flex items-center space-x-2 flex-wrap gap-y-1">
-                <span class="bg-netflix-red text-white text-xs font-bold px-2 py-0.5 rounded uppercase tracking-widest">CASAMENTO: 22/11/2026</span>
-                <span class="text-gray-300 text-sm font-semibold tracking-wider">ORIGINAL DO CORAÇÃO</span>
+        <div class="relative z-10 px-4 md:px-12 max-w-3xl mt-24 space-y-5">
+            <div class="flex items-center space-x-3 flex-wrap gap-y-1">
+                <span class="bg-netflix-red text-white text-xs font-bold px-2.5 py-1 rounded tracking-wider uppercase font-mono">CASAMENTO: 22/11/2026</span>
+                <span class="text-gray-300 text-xs font-mono uppercase tracking-widest bg-white/10 px-2.5 py-1 rounded backdrop-blur-sm">Série Original • Temporada Final</span>
             </div>
-            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">Monique & Gilney</h1>
-            <p class="text-gray-200 text-sm md:text-base leading-relaxed line-clamp-3">
-                A contagem regressiva oficial para o dia mais esperado das nossas vidas. Prepare a pipoca e acompanhe os melhores momentos, viagens e risadas desta história que mal começou a ser contada.
+            <h1 class="text-5xl md:text-8xl font-display tracking-wide drop-shadow-lg text-white leading-none">Monique & Gilney</h1>
+            <p class="text-gray-200 text-sm md:text-lg font-serif italic text-gray-300 max-w-2xl leading-relaxed">
+                "A contagem regressiva oficial para o dia mais esperado das nossas vidas. Prepare a pipoca e acompanhe os melhores momentos, viagens e risadas desta história que mal começou."
             </p>
-            <div class="flex items-center space-x-3 pt-2">
+            <div class="flex items-center space-x-4 pt-2">
                 <!-- [SUPABASE / VÍDEO]: Substitua o link do vídeo trailer se desejar -->
-                <button onclick="abrirPlayer('https://www.w3schools.com/html/mov_bbb.mp4', 'Trailer Oficial - Monique & Gilney')" class="flex items-center justify-center space-x-2 bg-white text-black font-bold px-6 py-2.5 rounded hover:bg-white/85 transition text-sm md:text-base">
+                <button onclick="abrirPlayer('https://www.w3schools.com/html/mov_bbb.mp4', 'Trailer Oficial - Monique & Gilney')" class="flex items-center justify-center space-x-3 bg-white text-black font-bold px-7 py-3 rounded-md hover:bg-white/85 transition text-sm md:text-base tracking-wide shadow-lg">
                     <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                     <span>Assistir Trailer</span>
                 </button>
-                <button onclick="abrirModalInfo()" class="flex items-center justify-center space-x-2 bg-gray-500/70 text-white font-bold px-6 py-2.5 rounded hover:bg-gray-500/50 transition text-sm md:text-base backdrop-blur-sm">
+                <button onclick="abrirModalInfo()" class="flex items-center justify-center space-x-3 bg-gray-600/70 text-white font-bold px-7 py-3 rounded-md hover:bg-gray-600/50 transition text-sm md:text-base backdrop-blur-md border border-white/20 tracking-wide">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span>Detalhes do Casamento</span>
                 </button>
@@ -85,118 +94,117 @@
     </section>
 
     <!-- LISTAS / FILEIRAS ESTILO NETFLIX -->
-    <main class="relative z-20 pb-24 -mt-16 md:-mt-24 space-y-10">
+    <main class="relative z-20 pb-28 -mt-20 md:-mt-28 space-y-12">
 
         <!-- FILEIRA 1: EPISÓDIOS E VÍDEOS -->
-        <section class="px-4 md:px-12 space-y-3">
-            <h2 class="text-lg md:text-xl font-bold text-gray-200 hover:text-white transition cursor-pointer flex items-center group">
+        <section class="px-4 md:px-12 space-y-4">
+            <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-tight flex items-center group font-sans">
                 Episódios & Momentos Marcantes
             </h2>
-            <div class="flex space-x-4 overflow-x-auto hide-scroll pb-4 pt-2">
+            <div class="flex space-x-5 overflow-x-auto hide-scroll pb-4 pt-2">
                 <!-- CARD 1 -->
-                <div class="flex-none w-64 md:w-72 bg-netflix-gray rounded overflow-hidden shadow-lg group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30">
+                <div class="flex-none w-72 md:w-80 bg-netflix-gray rounded-lg overflow-hidden shadow-xl group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 border border-white/5">
                     <!-- [SUPABASE / FOTO]: Imagem do Card 1 -->
-                    <div class="h-36 md:h-40 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=500&q=80');">
+                    <div class="h-40 md:h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=500&q=80');">
                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
-                        <span class="absolute bottom-2 right-2 bg-black/80 text-xs px-1.5 py-0.5 rounded font-mono">10:20</span>
+                        <span class="absolute bottom-2 right-2 bg-black/80 text-xs px-2 py-0.5 rounded font-mono tracking-tighter">10:20</span>
                     </div>
-                    <div class="p-3 bg-[#181818] space-y-2">
+                    <div class="p-4 bg-[#181818] space-y-3">
                         <div class="flex items-center justify-between">
                             <!-- [SUPABASE / VÍDEO]: Link do vídeo do Episódio 1 -->
-                            <button onclick="abrirPlayer('https://www.w3schools.com/html/mov_bbb.mp4', 'Ep. 1: O Início de Tudo')" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 transition">
+                            <button onclick="abrirPlayer('https://www.w3schools.com/html/mov_bbb.mp4', 'Ep. 1: O Início de Tudo')" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 transition shadow-md">
                                 <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                             </button>
-                            <span class="text-xs text-green-400 font-semibold">100% Match</span>
+                            <span class="text-xs text-emerald-400 font-mono font-semibold">100% Match</span>
                         </div>
-                        <p class="text-xs text-gray-300 font-medium">Ep. 1: O dia em que nossos caminhos se cruzaram.</p>
+                        <p class="text-xs md:text-sm text-gray-200 font-medium leading-snug">Ep. 1: O dia em que nossos caminhos se cruzaram de vez.</p>
                     </div>
                 </div>
 
                 <!-- CARD 2 -->
-                <div class="flex-none w-64 md:w-72 bg-netflix-gray rounded overflow-hidden shadow-lg group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30">
+                <div class="flex-none w-72 md:w-80 bg-netflix-gray rounded-lg overflow-hidden shadow-xl group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 border border-white/5">
                     <!-- [SUPABASE / FOTO]: Imagem do Card 2 -->
-                    <div class="h-36 md:h-40 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80');">
+                    <div class="h-40 md:h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80');">
                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
-                        <span class="absolute bottom-2 right-2 bg-black/80 text-xs px-1.5 py-0.5 rounded font-mono">15:45</span>
+                        <span class="absolute bottom-2 right-2 bg-black/80 text-xs px-2 py-0.5 rounded font-mono tracking-tighter">15:45</span>
                     </div>
-                    <div class="p-3 bg-[#181818] space-y-2">
+                    <div class="p-4 bg-[#181818] space-y-3">
                         <div class="flex items-center justify-between">
                             <!-- [SUPABASE / VÍDEO]: Link do vídeo do Episódio 2 -->
-                            <button onclick="abrirPlayer('https://www.w3schools.com/html/mov_bbb.mp4', 'Ep. 2: A Viagem Inesquecível')" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 transition">
+                            <button onclick="abrirPlayer('https://www.w3schools.com/html/mov_bbb.mp4', 'Ep. 2: A Viagem Inesquecível')" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 transition shadow-md">
                                 <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                             </button>
-                            <span class="text-xs text-green-400 font-semibold">99% Match</span>
+                            <span class="text-xs text-emerald-400 font-mono font-semibold">99% Match</span>
                         </div>
-                        <p class="text-xs text-gray-300 font-medium">Ep. 2: Risadas, perrengues e paisagens lindas.</p>
+                        <p class="text-xs md:text-sm text-gray-200 font-medium leading-snug">Ep. 2: Risadas, perrengues e paisagens lindas pelo mundo.</p>
                     </div>
                 </div>
 
                 <!-- CARD 3 -->
-                <div class="flex-none w-64 md:w-72 bg-netflix-gray rounded overflow-hidden shadow-lg group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30">
+                <div class="flex-none w-72 md:w-80 bg-netflix-gray rounded-lg overflow-hidden shadow-xl group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 border border-white/5">
                     <!-- [SUPABASE / FOTO]: Imagem do Card 3 -->
-                    <div class="h-36 md:h-40 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&w=500&q=80');">
+                    <div class="h-40 md:h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&w=500&q=80');">
                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
-                        <span class="absolute bottom-2 right-2 bg-black/80 text-xs px-1.5 py-0.5 rounded font-mono">08:30</span>
+                        <span class="absolute bottom-2 right-2 bg-black/80 text-xs px-2 py-0.5 rounded font-mono tracking-tighter">08:30</span>
                     </div>
-                    <div class="p-3 bg-[#181818] space-y-2">
+                    <div class="p-4 bg-[#181818] space-y-3">
                         <div class="flex items-center justify-between">
                             <!-- [SUPABASE / VÍDEO]: Link do vídeo do Episódio 3 -->
-                            <button onclick="abrirPlayer('https://www.w3schools.com/html/mov_bbb.mp4', 'Ep. 3: O Grande Pedido')" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 transition">
+                            <button onclick="abrirPlayer('https://www.w3schools.com/html/mov_bbb.mp4', 'Ep. 3: O Grande Pedido')" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 transition shadow-md">
                                 <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                             </button>
-                            <span class="text-xs text-green-400 font-semibold">Especial</span>
+                            <span class="text-xs text-amber-400 font-mono font-semibold uppercase tracking-wider">Especial</span>
                         </div>
-                        <p class="text-xs text-gray-300 font-medium">Ep. 3: O momento em que dissemos o primeiro "sim".</p>
+                        <p class="text-xs md:text-sm text-gray-200 font-medium leading-snug">Ep. 3: O momento inesquecível em que dissemos o primeiro "sim".</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- FILEIRA 2: GALERIA DE FOTOS (ESTILO POSTER) -->
-        <section id="episodios" class="px-4 md:px-12 space-y-3">
-            <h2 class="text-lg md:text-xl font-bold text-gray-200 hover:text-white transition cursor-pointer flex items-center group">
+        <section id="galeria" class="px-4 md:px-12 space-y-4">
+            <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-tight flex items-center group font-sans">
                 Galeria de Memórias (Nossos Melhores Ângulos)
             </h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 <!-- Foto 1 -->
-                <div class="bg-netflix-gray rounded overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-md">
-                    <!-- [SUPABASE / FOTO]: Substitua o link da foto -->
-                    <div class="h-44 md:h-52 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1494774157365-9e04c6720e47?auto=format&fit=crop&w=500&q=80');"></div>
-                    <div class="p-2 bg-[#181818]">
-                        <p class="text-xs font-bold truncate">Primeiro Encontro</p>
-                        <p class="text-[10px] text-gray-400">Comédia romântica • 2024</p>
+                <div class="bg-netflix-gray rounded-lg overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-lg border border-white/5">
+                    <div class="h-48 md:h-56 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1494774157365-9e04c6720e47?auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="p-3 bg-[#181818] space-y-1">
+                        <p class="text-xs font-bold text-white truncate">Primeiro Encontro</p>
+                        <p class="text-[10px] text-gray-400 font-mono">Comédia romântica • 2024</p>
                     </div>
                 </div>
                 <!-- Foto 2 -->
-                <div class="bg-netflix-gray rounded overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-md">
-                    <div class="h-44 md:h-52 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=500&q=80');"></div>
-                    <div class="p-2 bg-[#181818]">
-                        <p class="text-xs font-bold truncate">Noivado Oficial</p>
-                        <p class="text-[10px] text-gray-400">Drama emocionante • 2025</p>
+                <div class="bg-netflix-gray rounded-lg overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-lg border border-white/5">
+                    <div class="h-48 md:h-56 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="p-3 bg-[#181818] space-y-1">
+                        <p class="text-xs font-bold text-white truncate">Noivado Oficial</p>
+                        <p class="text-[10px] text-gray-400 font-mono">Drama emocionante • 2025</p>
                     </div>
                 </div>
                 <!-- Foto 3 -->
-                <div class="bg-netflix-gray rounded overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-md">
-                    <div class="h-44 md:h-52 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=500&q=80');"></div>
-                    <div class="p-2 bg-[#181818]">
-                        <p class="text-xs font-bold truncate">Férias na Praia</p>
-                        <p class="text-[10px] text-gray-400">Aventura • 2025</p>
+                <div class="bg-netflix-gray rounded-lg overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-lg border border-white/5">
+                    <div class="h-48 md:h-56 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="p-3 bg-[#181818] space-y-1">
+                        <p class="text-xs font-bold text-white truncate">Férias na Praia</p>
+                        <p class="text-[10px] text-gray-400 font-mono">Aventura • 2025</p>
                     </div>
                 </div>
                 <!-- Foto 4 -->
-                <div class="bg-netflix-gray rounded overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-md">
-                    <div class="h-44 md:h-52 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80');"></div>
-                    <div class="p-2 bg-[#181818]">
-                        <p class="text-xs font-bold truncate">Domingo em Casa</p>
-                        <p class="text-[10px] text-gray-400">Reality Show • Diário</p>
+                <div class="bg-netflix-gray rounded-lg overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-lg border border-white/5">
+                    <div class="h-48 md:h-56 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="p-3 bg-[#181818] space-y-1">
+                        <p class="text-xs font-bold text-white truncate">Domingo em Casa</p>
+                        <p class="text-[10px] text-gray-400 font-mono">Reality Show • Diário</p>
                     </div>
                 </div>
                 <!-- Foto 5 -->
-                <div class="bg-netflix-gray rounded overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-md">
-                    <div class="h-44 md:h-52 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=80');"></div>
-                    <div class="p-2 bg-[#181818]">
-                        <p class="text-xs font-bold truncate">Rumo ao altar</p>
-                        <p class="text-[10px] text-gray-400">Documentário • 2026</p>
+                <div class="bg-netflix-gray rounded-lg overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-lg border border-white/5">
+                    <div class="h-48 md:h-56 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="p-3 bg-[#181818] space-y-1">
+                        <p class="text-xs font-bold text-white truncate">Rumo ao Altar</p>
+                        <p class="text-[10px] text-gray-400 font-mono">Documentário • 2026</p>
                     </div>
                 </div>
             </div>
@@ -205,11 +213,11 @@
     </main>
 
     <!-- MODAL DE REPRODUÇÃO DE VÍDEO -->
-    <div id="videoModal" class="fixed inset-0 z-50 bg-black/90 hidden items-center justify-center p-4">
-        <div class="relative w-full max-w-4xl bg-netflix-dark rounded-lg overflow-hidden shadow-2xl border border-white/10">
-            <div class="flex items-center justify-between bg-[#181818] px-4 py-3">
-                <span id="modalVideoTitle" class="font-bold text-sm md:text-base">Reproduzindo Momento</span>
-                <button onclick="fecharPlayer()" class="text-gray-400 hover:text-white font-bold text-xl px-2">&times;</button>
+    <div id="videoModal" class="fixed inset-0 z-50 bg-black/90 hidden items-center justify-center p-4 backdrop-blur-md">
+        <div class="relative w-full max-w-4xl bg-netflix-dark rounded-xl overflow-hidden shadow-2xl border border-white/10">
+            <div class="flex items-center justify-between bg-[#181818] px-5 py-4 border-b border-white/5">
+                <span id="modalVideoTitle" class="font-bold text-sm md:text-base tracking-wide">Reproduzindo Momento</span>
+                <button onclick="fecharPlayer()" class="text-gray-400 hover:text-white font-bold text-2xl px-2 leading-none">&times;</button>
             </div>
             <div class="relative aspect-video bg-black flex items-center justify-center">
                 <video id="playerVideo" controls class="w-full h-full object-contain">
@@ -221,21 +229,21 @@
     </div>
 
     <!-- MODAL DE DETALHES DO CASAMENTO -->
-    <div id="infoModal" class="fixed inset-0 z-50 bg-black/80 hidden items-center justify-center p-4">
-        <div class="relative w-full max-w-lg bg-[#181818] rounded-lg overflow-hidden shadow-2xl border border-white/10 p-6 space-y-4">
+    <div id="infoModal" class="fixed inset-0 z-50 bg-black/80 hidden items-center justify-center p-4 backdrop-blur-md">
+        <div class="relative w-full max-w-lg bg-[#181818] rounded-xl overflow-hidden shadow-2xl border border-white/10 p-6 md:p-8 space-y-5">
             <div class="flex justify-between items-center">
-                <h3 class="text-xl font-bold text-netflix-red">Monique & Gilney</h3>
-                <button onclick="fecharModalInfo()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+                <h3 class="text-2xl font-display tracking-wider text-netflix-red">Monique & Gilney</h3>
+                <button onclick="fecharModalInfo()" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
             </div>
-            <p class="text-sm text-gray-300 leading-relaxed">
-                Esta série documental foi renovada para a temporada mais importante de todas: o nosso casamento em <strong>22 de novembro de 2026</strong>.
+            <p class="text-sm md:text-base text-gray-300 font-serif italic leading-relaxed">
+                "Esta série documental foi renovada para a temporada mais importante de todas: o nosso casamento em <strong>22 de novembro de 2026</strong>."
             </p>
-            <div class="border-t border-white/10 pt-4 space-y-2 text-xs text-gray-400">
-                <p><strong>Elenco Principal:</strong> Monique & Gilney</p>
-                <p><strong>Data da Estreia (Casamento):</strong> 22/11/2026</p>
-                <p><strong>Gênero:</strong> Romance épico, Comédia familiar, Para sempre</p>
+            <div class="border-t border-white/10 pt-4 space-y-2 text-xs md:text-sm text-gray-400 font-mono">
+                <p><strong class="text-gray-200">Elenco Principal:</strong> Monique & Gilney</p>
+                <p><strong class="text-gray-200">Data de Estreia (Casamento):</strong> 22/11/2026</p>
+                <p><strong class="text-gray-200">Gênero:</strong> Romance épico, Comédia familiar, Para sempre</p>
             </div>
-            <button onclick="fecharModalInfo()" class="w-full bg-netflix-red text-white py-2 rounded font-bold hover:bg-red-700 transition">Fechar</button>
+            <button onclick="fecharModalInfo()" class="w-full bg-netflix-red text-white py-3 rounded-md font-bold hover:bg-red-700 transition tracking-wider uppercase text-sm shadow-lg">Fechar</button>
         </div>
     </div>
 
