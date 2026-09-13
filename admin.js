@@ -1,10 +1,8 @@
 // ===================================================================
 // NOSSOFLIX - SCRIPT DO PAINEL ADM
 // ===================================================================
-// IMPORTANTE: substitua pelos seus dados do Supabase
-// ===================================================================
-const SUPABASE_URL = https://kghofwfkqkyqkqwlooub.supabase.co/rest/v1/;
-const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtnaG9md2ZrcWt5cWtxd2xvb3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzMTMxMjMsImV4cCI6MjEwNDg4OTEyM30.g_ouJmp2nr194XV3uQr4c77QkNL1wJ-RealwNFWOJOE;
+const SUPABASE_URL = 'https://kghofwfkqkyqkqwlooub.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtnaG9md2ZrcWt5cWtxd2xvb3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzMTMxMjMsImV4cCI6MjEwNDg4OTEyM30.g_ouJmp2nr194XV3uQr4c77QkNL1wJ-RealwNFWOJOE';
 const BUCKET_NAME = 'midias-casal';
 // ===================================================================
 
@@ -59,7 +57,7 @@ loginForm.addEventListener('submit', async (e) => {
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-        loginError.textContent = 'E-mail ou senha inválidos.';
+        loginError.textContent = 'Erro: ' + error.message;
         console.error(error);
     } else {
         loginError.textContent = '';
