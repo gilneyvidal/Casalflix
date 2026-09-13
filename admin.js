@@ -1,5 +1,5 @@
 // ===================================================================
-// NOSSOFLIX - SCRIPT DO PAINEL ADM
+// NOSSOFLIX - SCRIPT DO PAINEL ADM (v2 - blindado)
 // ===================================================================
 const SUPABASE_URL = 'https://kghofwfkqkyqkqwlooub.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtnaG9md2ZrcWt5cWtxd2xvb3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzMTMxMjMsImV4cCI6MjEwNDg4OTEyM30.g_ouJmp2nr194XV3uQr4c77QkNL1wJ-RealwNFWOJOE';
@@ -9,85 +9,130 @@ const AVATAR_BUCKET = 'avatars';
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+console.log('[ADM] Script carregado');
 
-// ---- Elementos ----
-const loginScreen = document.getElementById('login-screen');
-const adminPanel = document.getElementById('admin-panel');
-const loginForm = document.getElementById('login-form');
-const loginError = document.getElementById('login-error');
-const logoutBtn = document.getElementById('logout-btn');
-const userEmailEl = document.getElementById('user-email');
+let supabase;
+try {
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('[ADM] Supabase client criado');
+} catch (e) {
+    console.error('[ADM] Falha ao criar client do Supabase:', e);
+    alert('Erro ao conectar no Supabase. Verifique a URL e a chave.');
+}
 
-const uploadForm = document.getElementById('upload-form');
-const fileInput = document.getElementById('file-input');
-const uploadCategorySelect = document.getElementById('upload-category');
-const uploadTitlesInput = document.getElementById('upload-titles');
-const uploadBtn = document.getElementById('upload-btn');
-const progressContainer = document.getElementById('upload-progress');
-const progressBar = document.getElementById('progress-bar');
-const uploadStatus = document.getElementById('upload-status');
+// ---- Helpers seguros ----
+function $(id) { return document.getElementById(id); }
+function safe(fn) {
+    return async (...args) => {
+        try { return await fn(...args); }
+        catch (e) { console.error('[ADM] Erro:', e); }
+    };
+}
 
-const mediaListContainer = document.getElementById('media-list-container');
-const categoriesList = document.getElementById('categories-list');
-const categoryForm = document.getElementById('category-form');
-const newCategoryName = document.getElementById('new-category-name');
+// ---- Elementos (pegos com segurança) ----
+const loginScreen      = $('login-screen');
+const adminPanel       = $('admin-panel');
+const loginForm        = $('login-form');
+const loginError       = $('login-error');
+const logoutBtn        = $('logout-btn');
+const userEmailEl      = $('user-email');
 
-const profilesList = document.getElementById('profiles-list');
-const profileForm = document.getElementById('profile-form');
-const newProfileName = document.getElementById('new-profile-name');
+const uploadForm       = $('upload-form');
+const fileInput        = $('file-input');
+const uploadCategorySelect = $('upload-category');
+const uploadTitlesInput= $('upload-titles');
+const uploadBtn        = $('upload-btn');
+const progressContainer= $('upload-progress');
+const progressBar      = $('progress-bar');
+const uploadStatus     = $('upload-status');
 
-const splashForm = document.getElementById('splash-form');
-const splashEnabledInput = document.getElementById('splash-enabled');
-const splashTextInput = document.getElementById('splash-text-input');
-const splashDurationInput = document.getElementById('splash-duration-input');
-const splashStatus = document.getElementById('splash-status');
+const mediaListContainer = $('media-list-container');
+const categoriesList     = $('categories-list');
+const categoryForm       = $('category-form');
+const newCategoryName    = $('new-category-name');
 
-const settingsForm = document.getElementById('settings-form');
-const settingsStatus = document.getElementById('settings-status');
+const profilesList       = $('profiles-list');
+const profileForm        = $('profile-form');
+const newProfileName     = $('new-profile-name');
+
+const splashForm         = $('splash-form');
+const splashEnabledInput = $('splash-enabled');
+const splashTextInput    = $('splash-text-input');
+const splashDurationInput= $('splash-duration-input');
+const splashStatus       = $('splash-status');
+
+const settingsForm       = $('settings-form');
+const settingsStatus     = $('settings-status');
 
 const VIDEO_EXTENSIONS = ['mp4', 'webm', 'ogg', 'mov', 'm4v'];
 let categoriesCache = [];
 let profilesCache = [];
 
 // ===================================================================
-// AUTENTICAÇÃO
+// TELA: mostrar login / painel
 // ===================================================================
-supabase.auth.onAuthStateChange((event, session) => {
-    if (session) {
-        showAdminPanel(session.user);
-    } else {
-        showLoginScreen();
-    }
-});
-
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    loginError.textContent = 'Entrando...';
-
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-        loginError.textContent = 'Erro: ' + error.message;
-        console.error(error);
-    } else {
-        loginError.textContent = '';
-    }
-});
-
-logoutBtn.addEventListener('click', async () => { await supabase.auth.signOut(); });
-
 function showAdminPanel(user) {
-    loginScreen.classList.add('hidden');
-    adminPanel.classList.remove('hidden');
-    userEmailEl.textContent = user?.email || '';
+    if (loginScreen) loginScreen.classList.add('hidden');
+    if (adminPanel) adminPanel.classList.remove('hidden');
+    if (userEmailEl) userEmailEl.textContent = user?.email || '';
     refreshAll();
 }
 
 function showLoginScreen() {
-    loginScreen.classList.remove('hidden');
-    adminPanel.classList.add('hidden');
+    if (loginScreen) loginScreen.classList.remove('hidden');
+    if (adminPanel) adminPanel.classList.add('hidden');
+}
+
+// ===================================================================
+// AUTENTICAÇÃO
+// ===================================================================
+async function initAuth() {
+    // 1) Verifica sessão atual (mais confiável que depender só do evento)
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('[ADM] Sessão inicial:', session ? 'autenticado' : 'anônimo');
+        if (session) showAdminPanel(session.user);
+        else showLoginScreen();
+    } catch (e) {
+        console.error('[ADM] Erro no getSession:', e);
+        showLoginScreen();
+    }
+
+    // 2) Escuta mudanças (login/logout)
+    supabase.auth.onAuthStateChange((event, session) => {
+        console.log('[ADM] onAuthStateChange:', event, session ? 'com sessão' : 'sem sessão');
+        if (session) showAdminPanel(session.user);
+        else showLoginScreen();
+    });
+}
+
+if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = $('email').value.trim();
+        const password = $('password').value;
+        if (loginError) loginError.textContent = 'Entrando...';
+
+        try {
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                if (loginError) loginError.textContent = 'Erro: ' + error.message;
+                console.error('[ADM] Login falhou:', error);
+            } else {
+                if (loginError) loginError.textContent = '';
+            }
+        } catch (e) {
+            if (loginError) loginError.textContent = 'Erro inesperado: ' + e.message;
+            console.error('[ADM] Erro no login:', e);
+        }
+    });
+}
+
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+        try { await supabase.auth.signOut(); }
+        catch (e) { console.error(e); }
+    });
 }
 
 // ===================================================================
@@ -98,18 +143,21 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+        const target = document.getElementById('tab-' + btn.dataset.tab);
+        if (target) target.classList.add('active');
     });
 });
 
 // ===================================================================
-// REFRESH GERAL
+// REFRESH GERAL (cada etapa é isolada — uma falha não trava as outras)
 // ===================================================================
 async function refreshAll() {
-    await loadCategories();
-    await loadProfiles();
-    await loadMediaList();
-    await loadSettings();
+    console.log('[ADM] refreshAll iniciado');
+    await safe(loadCategories)();
+    await safe(loadProfiles)();
+    await safe(loadMediaList)();
+    await safe(loadSettings)();
+    console.log('[ADM] refreshAll concluído');
 }
 
 // ===================================================================
@@ -117,90 +165,91 @@ async function refreshAll() {
 // ===================================================================
 async function loadCategories() {
     const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('display_order', { ascending: true });
+        .from('categories').select('*').order('display_order', { ascending: true });
 
     if (error) {
-        console.error('Erro ao carregar categorias:', error);
+        console.error('[ADM] Erro categorias:', error);
         return;
     }
 
     categoriesCache = data || [];
 
-    uploadCategorySelect.innerHTML = '<option value="">— Sem categoria —</option>';
-    categoriesCache.forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat.id;
-        opt.textContent = cat.name;
-        uploadCategorySelect.appendChild(opt);
-    });
+    if (uploadCategorySelect) {
+        uploadCategorySelect.innerHTML = '<option value="">— Sem categoria —</option>';
+        categoriesCache.forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat.id;
+            opt.textContent = cat.name;
+            uploadCategorySelect.appendChild(opt);
+        });
+    }
 
-    categoriesList.innerHTML = '';
-    categoriesCache.forEach(cat => {
-        const row = document.createElement('div');
-        row.className = 'category-row';
-        row.innerHTML = `
-            <input type="text" value="${cat.name}" data-id="${cat.id}">
-            <button class="btn-small btn-save">Salvar</button>
-            <button class="btn-small btn-delete">Excluir</button>
-        `;
-        row.querySelector('.btn-save').onclick = async () => {
-            const newName = row.querySelector('input').value.trim();
-            if (!newName) return;
-            const { error } = await supabase
-                .from('categories')
-                .update({ name: newName })
-                .eq('id', cat.id);
-            if (error) alert('Erro: ' + error.message);
-            else { await loadCategories(); await loadMediaList(); }
-        };
-        row.querySelector('.btn-delete').onclick = async () => {
-            if (!confirm(`Excluir a categoria "${cat.name}"? As mídias dela irão para "Sem categoria".`)) return;
-            const { error } = await supabase.from('categories').delete().eq('id', cat.id);
-            if (error) alert('Erro: ' + error.message);
-            else { await loadCategories(); await loadMediaList(); }
-        };
-        categoriesList.appendChild(row);
-    });
+    if (categoriesList) {
+        categoriesList.innerHTML = '';
+        categoriesCache.forEach(cat => {
+            const row = document.createElement('div');
+            row.className = 'category-row';
+            row.innerHTML = `
+                <input type="text" value="${cat.name}" data-id="${cat.id}">
+                <button class="btn-small btn-save">Salvar</button>
+                <button class="btn-small btn-delete">Excluir</button>
+            `;
+            row.querySelector('.btn-save').onclick = async () => {
+                const newName = row.querySelector('input').value.trim();
+                if (!newName) return;
+                const { error } = await supabase.from('categories').update({ name: newName }).eq('id', cat.id);
+                if (error) alert('Erro: ' + error.message);
+                else { await loadCategories(); await loadMediaList(); }
+            };
+            row.querySelector('.btn-delete').onclick = async () => {
+                if (!confirm(`Excluir a categoria "${cat.name}"?`)) return;
+                const { error } = await supabase.from('categories').delete().eq('id', cat.id);
+                if (error) alert('Erro: ' + error.message);
+                else { await loadCategories(); await loadMediaList(); }
+            };
+            categoriesList.appendChild(row);
+        });
+    }
 }
 
-categoryForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = newCategoryName.value.trim();
-    if (!name) return;
-    const last = categoriesCache[categoriesCache.length - 1];
-    const order = (last ? last.display_order : 0) + 1;
-    const { error } = await supabase.from('categories').insert({ name, display_order: order });
-    if (error) alert('Erro: ' + error.message);
-    else { newCategoryName.value = ''; await loadCategories(); }
-});
+if (categoryForm) {
+    categoryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = newCategoryName.value.trim();
+        if (!name) return;
+        const last = categoriesCache[categoriesCache.length - 1];
+        const order = (last ? last.display_order : 0) + 1;
+        const { error } = await supabase.from('categories').insert({ name, display_order: order });
+        if (error) alert('Erro: ' + error.message);
+        else { newCategoryName.value = ''; await loadCategories(); }
+    });
+}
 
 // ===================================================================
 // PERFIS
 // ===================================================================
 async function loadProfiles() {
     const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('display_order', { ascending: true });
+        .from('profiles').select('*').order('display_order', { ascending: true });
 
     if (error) {
-        console.error('Erro ao carregar perfis:', error);
+        console.warn('[ADM] Perfis indisponíveis (rode a migração SQL):', error.message);
+        if (profilesList) {
+            profilesList.innerHTML = '<p style="color:#e50914;">⚠️ Tabela "profiles" não encontrada. Rode o SQL de migração no Supabase.</p>';
+        }
         return;
     }
 
     profilesCache = data || [];
+    if (!profilesList) return;
     profilesList.innerHTML = '';
 
     profilesCache.forEach(profile => {
         const item = document.createElement('div');
         item.className = 'profile-admin-item';
 
-        // Avatar
         const avatar = document.createElement('label');
         avatar.className = 'profile-admin-avatar';
-
         if (profile.avatar_url) {
             const img = document.createElement('img');
             img.src = profile.avatar_url;
@@ -209,7 +258,6 @@ async function loadProfiles() {
         } else {
             avatar.textContent = (profile.name || '?').charAt(0);
         }
-
         const hint = document.createElement('div');
         hint.className = 'overlay-hint';
         hint.textContent = 'Trocar foto';
@@ -221,13 +269,11 @@ async function loadProfiles() {
         fileInputEl.addEventListener('change', (e) => uploadAvatar(profile, e.target.files[0]));
         avatar.appendChild(fileInputEl);
 
-        // Nome
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
         nameInput.value = profile.name;
         nameInput.placeholder = 'Nome do perfil';
 
-        // Ações
         const actions = document.createElement('div');
         actions.className = 'actions';
 
@@ -237,22 +283,16 @@ async function loadProfiles() {
         saveBtn.onclick = async () => {
             const newName = nameInput.value.trim();
             if (!newName) return;
-            const { error } = await supabase
-                .from('profiles')
-                .update({ name: newName })
-                .eq('id', profile.id);
+            const { error } = await supabase.from('profiles').update({ name: newName }).eq('id', profile.id);
             if (error) alert('Erro: ' + error.message);
-            else { await loadProfiles(); }
+            else await loadProfiles();
         };
 
         const delBtn = document.createElement('button');
         delBtn.className = 'btn-small btn-delete';
         delBtn.textContent = 'Excluir';
         delBtn.onclick = async () => {
-            if (profilesCache.length <= 1) {
-                alert('É preciso ter pelo menos 1 perfil.');
-                return;
-            }
+            if (profilesCache.length <= 1) { alert('É preciso ter pelo menos 1 perfil.'); return; }
             if (!confirm(`Excluir o perfil "${profile.name}"?`)) return;
             const { error } = await supabase.from('profiles').delete().eq('id', profile.id);
             if (error) alert('Erro: ' + error.message);
@@ -261,7 +301,6 @@ async function loadProfiles() {
 
         actions.appendChild(saveBtn);
         actions.appendChild(delBtn);
-
         item.appendChild(avatar);
         item.appendChild(nameInput);
         item.appendChild(actions);
@@ -271,144 +310,129 @@ async function loadProfiles() {
 
 async function uploadAvatar(profile, file) {
     if (!file) return;
+    try {
+        const ext = file.name.split('.').pop();
+        const uniqueName = `${profile.id}_${Date.now()}.${ext}`;
 
-    const ext = file.name.split('.').pop();
-    const uniqueName = `${profile.id}_${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+            .from(AVATAR_BUCKET)
+            .upload(uniqueName, file, { cacheControl: '3600', upsert: true });
 
-    const { error: uploadError } = await supabase.storage
-        .from(AVATAR_BUCKET)
-        .upload(uniqueName, file, { cacheControl: '3600', upsert: true });
+        if (uploadError) { alert('Erro ao enviar avatar: ' + uploadError.message); return; }
 
-    if (uploadError) {
-        alert('Erro ao enviar avatar: ' + uploadError.message);
-        return;
+        const { data: { publicUrl } } = supabase.storage
+            .from(AVATAR_BUCKET).getPublicUrl(uniqueName);
+
+        const { error: updateError } = await supabase
+            .from('profiles').update({ avatar_url: publicUrl }).eq('id', profile.id);
+
+        if (updateError) { alert('Erro ao salvar avatar: ' + updateError.message); return; }
+        await loadProfiles();
+    } catch (e) {
+        alert('Erro inesperado: ' + e.message);
+        console.error(e);
     }
-
-    const { data: { publicUrl } } = supabase.storage
-        .from(AVATAR_BUCKET)
-        .getPublicUrl(uniqueName);
-
-    const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('id', profile.id);
-
-    if (updateError) {
-        alert('Erro ao salvar avatar: ' + updateError.message);
-        return;
-    }
-
-    await loadProfiles();
 }
 
-profileForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = newProfileName.value.trim();
-    if (!name) return;
-    const last = profilesCache[profilesCache.length - 1];
-    const order = (last ? last.display_order : 0) + 1;
-    const { error } = await supabase.from('profiles').insert({ name, display_order: order });
-    if (error) alert('Erro: ' + error.message);
-    else { newProfileName.value = ''; await loadProfiles(); }
-});
+if (profileForm) {
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = newProfileName.value.trim();
+        if (!name) return;
+        const last = profilesCache[profilesCache.length - 1];
+        const order = (last ? last.display_order : 0) + 1;
+        const { error } = await supabase.from('profiles').insert({ name, display_order: order });
+        if (error) alert('Erro: ' + error.message);
+        else { newProfileName.value = ''; await loadProfiles(); }
+    });
+}
 
 // ===================================================================
 // SPLASH
 // ===================================================================
-splashForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const payload = {
-        splash_enabled: splashEnabledInput.checked,
-        splash_text: splashTextInput.value.trim() || 'NOSSOFLIX',
-        splash_duration: parseInt(splashDurationInput.value, 10) || 3500
-    };
-
-    const { error } = await supabase.from('site_settings').update(payload).eq('id', 1);
-
-    if (error) {
-        splashStatus.textContent = '❌ Erro ao salvar: ' + error.message;
-    } else {
-        splashStatus.textContent = '✅ Abertura salva!';
-        setTimeout(() => splashStatus.textContent = '', 3000);
-    }
-});
+if (splashForm) {
+    splashForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+            splash_enabled: splashEnabledInput.checked,
+            splash_text: splashTextInput.value.trim() || 'NOSSOFLIX',
+            splash_duration: parseInt(splashDurationInput.value, 10) || 3500
+        };
+        const { error } = await supabase.from('site_settings').update(payload).eq('id', 1);
+        if (error) splashStatus.textContent = '❌ ' + error.message;
+        else {
+            splashStatus.textContent = '✅ Abertura salva!';
+            setTimeout(() => splashStatus.textContent = '', 3000);
+        }
+    });
+}
 
 // ===================================================================
-// UPLOAD DE MÍDIAS
+// UPLOAD
 // ===================================================================
-uploadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const files = Array.from(fileInput.files);
-    if (!files.length) return;
+if (uploadForm) {
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const files = Array.from(fileInput.files);
+        if (!files.length) return;
 
-    const categoryId = uploadCategorySelect.value || null;
-    const titlesRaw = uploadTitlesInput.value.split(',').map(t => t.trim());
+        const categoryId = uploadCategorySelect.value || null;
+        const titlesRaw = uploadTitlesInput.value.split(',').map(t => t.trim());
 
-    uploadBtn.disabled = true;
-    progressContainer.classList.remove('hidden');
-    uploadStatus.textContent = `Enviando ${files.length} arquivo(s)...`;
+        uploadBtn.disabled = true;
+        progressContainer.classList.remove('hidden');
+        uploadStatus.textContent = `Enviando ${files.length} arquivo(s)...`;
 
-    let ok = 0, fail = 0;
+        let ok = 0, fail = 0;
 
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const ext = file.name.split('.').pop();
-        const uniqueName = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
-        const customTitle = titlesRaw[i] || '';
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const ext = file.name.split('.').pop();
+            const uniqueName = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+            const customTitle = titlesRaw[i] || '';
 
-        const { error: uploadError } = await supabase.storage
-            .from(BUCKET_NAME)
-            .upload(uniqueName, file, { cacheControl: '3600', upsert: false });
+            const { error: uploadError } = await supabase.storage
+                .from(BUCKET_NAME)
+                .upload(uniqueName, file, { cacheControl: '3600', upsert: false });
 
-        if (uploadError) {
-            console.error(uploadError);
-            fail++;
-        } else {
-            const { error: metaError } = await supabase.from('media_items').insert({
-                file_name: uniqueName,
-                display_title: customTitle || null,
-                category_id: categoryId,
-                display_order: 0
-            });
-            if (metaError) console.warn('Falha nos metadados:', metaError.message);
-            ok++;
+            if (uploadError) { console.error(uploadError); fail++; }
+            else {
+                const { error: metaError } = await supabase.from('media_items').insert({
+                    file_name: uniqueName,
+                    display_title: customTitle || null,
+                    category_id: categoryId,
+                    display_order: 0
+                });
+                if (metaError) console.warn('Metadados:', metaError.message);
+                ok++;
+            }
+            progressBar.style.width = `${((i + 1) / files.length) * 100}%`;
         }
 
-        progressBar.style.width = `${((i + 1) / files.length) * 100}%`;
-    }
-
-    uploadBtn.disabled = false;
-    progressContainer.classList.add('hidden');
-    progressBar.style.width = '0%';
-    uploadStatus.textContent = fail === 0
-        ? `✅ ${ok} arquivo(s) enviado(s) com sucesso!`
-        : `⚠️ ${ok} enviado(s), ${fail} com erro.`;
-
-    fileInput.value = '';
-    uploadTitlesInput.value = '';
-    await loadMediaList();
-});
+        uploadBtn.disabled = false;
+        progressContainer.classList.add('hidden');
+        progressBar.style.width = '0%';
+        uploadStatus.textContent = fail === 0
+            ? `✅ ${ok} arquivo(s) enviado(s)!`
+            : `⚠️ ${ok} enviado(s), ${fail} com erro.`;
+        fileInput.value = '';
+        uploadTitlesInput.value = '';
+        await loadMediaList();
+    });
+}
 
 // ===================================================================
-// LISTA / EDIÇÃO DE MÍDIAS
+// LISTA DE MÍDIAS
 // ===================================================================
 async function loadMediaList() {
+    if (!mediaListContainer) return;
     mediaListContainer.innerHTML = '<p>Carregando mídias...</p>';
 
-    const { data: files, error } = await supabase
-        .storage.from(BUCKET_NAME)
+    const { data: files, error } = await supabase.storage.from(BUCKET_NAME)
         .list('', { limit: 1000, sortBy: { column: 'created_at', order: 'desc' } });
 
-    if (error) {
-        mediaListContainer.innerHTML = '<p>Erro ao carregar as mídias.</p>';
-        return;
-    }
-
-    if (!files || files.length === 0) {
-        mediaListContainer.innerHTML = '<p>Nenhuma mídia enviada ainda.</p>';
-        return;
-    }
+    if (error) { mediaListContainer.innerHTML = '<p>Erro ao carregar as mídias.</p>'; return; }
+    if (!files || files.length === 0) { mediaListContainer.innerHTML = '<p>Nenhuma mídia enviada ainda.</p>'; return; }
 
     const { data: mediaItems } = await supabase.from('media_items').select('*');
     const metaMap = {};
@@ -427,11 +451,9 @@ async function loadMediaList() {
 
         const preview = document.createElement('div');
         preview.className = 'media-preview';
-        if (isVideo) {
-            preview.innerHTML = `<video src="${publicUrl}" muted preload="metadata"></video>`;
-        } else {
-            preview.innerHTML = `<img src="${publicUrl}" alt="" loading="lazy">`;
-        }
+        if (isVideo) preview.innerHTML = `<video src="${publicUrl}" muted preload="metadata"></video>`;
+        else preview.innerHTML = `<img src="${publicUrl}" alt="" loading="lazy">`;
+
         if (meta.is_featured) {
             const badge = document.createElement('span');
             badge.className = 'featured-badge';
@@ -505,37 +527,22 @@ async function saveMediaMeta(fileName, data) {
     const exists = data.exists;
     delete data.exists;
 
-    // Se está marcando como destaque, desmarca todos os outros
     if (data.is_featured) {
-        await supabase
-            .from('media_items')
-            .update({ is_featured: false })
-            .neq('file_name', fileName);
+        await supabase.from('media_items').update({ is_featured: false }).neq('file_name', fileName);
     }
 
     let error;
-    if (exists) {
-        ({ error } = await supabase.from('media_items').update(data).eq('file_name', fileName));
-    } else {
-        ({ error } = await supabase.from('media_items').insert({ file_name: fileName, ...data }));
-    }
+    if (exists) ({ error } = await supabase.from('media_items').update(data).eq('file_name', fileName));
+    else ({ error } = await supabase.from('media_items').insert({ file_name: fileName, ...data }));
 
-    if (error) {
-        alert('Erro ao salvar: ' + error.message);
-    } else {
-        await loadMediaList();
-    }
+    if (error) alert('Erro ao salvar: ' + error.message);
+    else await loadMediaList();
 }
 
 async function deleteMedia(fileName) {
-    if (!confirm(`Excluir "${fileName}"?\nEsta ação é irreversível.`)) return;
-
+    if (!confirm(`Excluir "${fileName}"?\nIrreversível.`)) return;
     const { error: storageError } = await supabase.storage.from(BUCKET_NAME).remove([fileName]);
-    if (storageError) {
-        alert('Erro ao excluir do storage: ' + storageError.message);
-        return;
-    }
-
+    if (storageError) { alert('Erro: ' + storageError.message); return; }
     await supabase.from('media_items').delete().eq('file_name', fileName);
     await loadMediaList();
 }
@@ -547,42 +554,49 @@ async function loadSettings() {
     const { data, error } = await supabase
         .from('site_settings').select('*').eq('id', 1).single();
 
-    if (error) { console.error(error); return; }
+    if (error) {
+        console.warn('[ADM] Configurações indisponíveis:', error.message);
+        return;
+    }
 
-    document.getElementById('site-title').value = data.site_title || '';
-    document.getElementById('hero-title-text').value = data.hero_title || '';
-    document.getElementById('hero-description-text').value = data.hero_description || '';
-    document.getElementById('profiles-title').value = data.profiles_title || '';
-    document.getElementById('primary-color').value = data.primary_color || '#e50914';
-    document.getElementById('footer-text-input').value = data.footer_text || '';
+    const set = (id, val) => { const el = $(id); if (el) el.value = val ?? ''; };
+    set('site-title', data.site_title);
+    set('hero-title-text', data.hero_title);
+    set('hero-description-text', data.hero_description);
+    set('profiles-title', data.profiles_title);
+    set('primary-color', data.primary_color || '#e50914');
+    set('footer-text-input', data.footer_text);
 
-    // Splash
-    splashEnabledInput.checked = data.splash_enabled !== false;
-    splashTextInput.value = data.splash_text || 'NOSSOFLIX';
-    splashDurationInput.value = data.splash_duration || 3500;
+    if (splashEnabledInput) splashEnabledInput.checked = data.splash_enabled !== false;
+    if (splashTextInput) splashTextInput.value = data.splash_text || 'NOSSOFLIX';
+    if (splashDurationInput) splashDurationInput.value = data.splash_duration || 3500;
 }
 
-settingsForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+if (settingsForm) {
+    settingsForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    const payload = {
-        site_title: document.getElementById('site-title').value.trim(),
-        hero_title: document.getElementById('hero-title-text').value.trim(),
-        hero_description: document.getElementById('hero-description-text').value.trim(),
-        profiles_title: document.getElementById('profiles-title').value.trim() || 'Quem está assistindo?',
-        primary_color: document.getElementById('primary-color').value,
-        footer_text: document.getElementById('footer-text-input').value.trim()
-    };
+        const payload = {
+            site_title: $('site-title').value.trim(),
+            hero_title: $('hero-title-text').value.trim(),
+            hero_description: $('hero-description-text').value.trim(),
+            profiles_title: $('profiles-title').value.trim() || 'Quem está assistindo?',
+            primary_color: $('primary-color').value,
+            footer_text: $('footer-text-input').value.trim()
+        };
 
-    const { error } = await supabase.from('site_settings').update(payload).eq('id', 1);
+        const { error } = await supabase.from('site_settings').update(payload).eq('id', 1);
+        if (error) settingsStatus.textContent = '❌ ' + error.message;
+        else {
+            settingsStatus.textContent = '✅ Salvo!';
+            setTimeout(() => settingsStatus.textContent = '', 3000);
+        }
+    });
+}
 
-    if (error) {
-        settingsStatus.textContent = '❌ Erro ao salvar: ' + error.message;
-    } else {
-        settingsStatus.textContent = '✅ Personalizações salvas!';
-        setTimeout(() => settingsStatus.textContent = '', 3000);
-    }
-});
-```
+// ===================================================================
+// START
+// ===================================================================
+console.log('[ADM] Iniciando autenticação...');
+initAuth();
 
----
