@@ -10,29 +10,59 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <h1 class="logo" id="site-logo">NOSSOFLIX</h1>
-        </div>
-    </header>
 
-    <section class="hero" id="hero">
-        <div class="hero-content">
-            <h2 class="hero-title" id="hero-title">Carregando...</h2>
-            <p class="hero-description" id="hero-description">Buscando nossas memórias...</p>
-            <button class="hero-button" id="play-hero-btn" style="display: none;">▶ Assistir</button>
-        </div>
-    </section>
+    <!-- ============================================================ -->
+    <!-- 1. SPLASH (abertura)                                          -->
+    <!-- ============================================================ -->
+    <div id="splash" class="splash hidden">
+        <div class="splash-text" id="splash-text">NOSSOFLIX</div>
+    </div>
 
-    <main class="main-content">
-        <div id="rows-container"></div>
-    </main>
+    <!-- ============================================================ -->
+    <!-- 2. SELEÇÃO DE PERFIL                                          -->
+    <!-- ============================================================ -->
+    <div id="profile-screen" class="profile-screen hidden">
+        <h1 class="profiles-title" id="profiles-title">Quem está assistindo?</h1>
+        <div class="profiles-grid" id="profiles-grid"></div>
+        <footer class="profile-footer">
+            <a href="admin.html" class="adm-link">adm</a>
+        </footer>
+    </div>
 
-    <footer class="footer">
-        <p id="footer-text">Feito com ❤️ para nós dois.</p>
-        <a href="admin.html" class="adm-link">adm</a>
-    </footer>
+    <!-- ============================================================ -->
+    <!-- 3. APLICAÇÃO PRINCIPAL                                        -->
+    <!-- ============================================================ -->
+    <div id="app" class="app hidden">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo" id="site-logo">NOSSOFLIX</h1>
+                <div class="header-user" id="header-user" title="Trocar perfil">
+                    <div class="header-avatar" id="header-avatar"></div>
+                </div>
+            </div>
+        </header>
 
+        <section class="hero" id="hero">
+            <div class="hero-content">
+                <h2 class="hero-title" id="hero-title">Carregando...</h2>
+                <p class="hero-description" id="hero-description">Buscando nossas memórias...</p>
+                <button class="hero-button" id="play-hero-btn" style="display: none;">▶ Assistir</button>
+            </div>
+        </section>
+
+        <main class="main-content">
+            <div id="rows-container"></div>
+        </main>
+
+        <footer class="footer">
+            <p id="footer-text">Feito com ❤️ para nós dois.</p>
+            <a href="admin.html" class="adm-link">adm</a>
+        </footer>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODAL DE MÍDIA                                                -->
+    <!-- ============================================================ -->
     <div id="media-modal" class="modal">
         <div class="modal-content">
             <span class="close-button" id="close-modal">&times;</span>
