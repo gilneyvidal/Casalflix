@@ -10,7 +10,14 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Elementos
+// ---- Elementos ----
+const splash = document.getElementById('splash');
+const splashText = document.getElementById('splash-text');
+const profileScreen = document.getElementById('profile-screen');
+const profilesTitle = document.getElementById('profiles-title');
+const profilesGrid = document.getElementById('profiles-grid');
+const app = document.getElementById('app');
+
 const rowsContainer = document.getElementById('rows-container');
 const heroSection = document.getElementById('hero');
 const heroTitle = document.getElementById('hero-title');
@@ -23,22 +30,143 @@ const closeModalBtn = document.getElementById('close-modal');
 const siteLogo = document.getElementById('site-logo');
 const footerText = document.getElementById('footer-text');
 const header = document.querySelector('.header');
+const headerUser = document.getElementById('header-user');
+const headerAvatar = document.getElementById('header-avatar');
 
 const VIDEO_EXTENSIONS = ['mp4', 'webm', 'ogg', 'mov', 'm4v'];
 
+// ---- Estado global ----
 let allMedia = [];
+let settingsData = null;
+let profilesData = [];
+let selectedProfile = null;
 
 // ===================================================================
 // INICIALIZAÇÃO
 // ===================================================================
 async function init() {
-    await loadSettings();
-    await loadContent();
+    // Carrega tudo em paralelo
+    await Promise.all([
+        loadSettings(),
+        loadProfiles(),
+        loadContent()
+    ]);
+
     setupEventListeners();
+    startFlow();
 }
 
 // ===================================================================
-// CARREGA CONFIGURAÇÕES
+// FLUXO: SPLASH → PERFIS → APP
+// ===================================================================
+function startFlow() {
+    const splashEnabled = settingsData?.splash_enabled !== false;
+    const splashDuration = settingsData?.splash_duration || 3500;
+
+    if (splashEnabled) {
+        // Aplica texto personalizado
+        splashText.textContent = settingsData?.splash_text || 'NOSSOFLIX';
+        // Ajusta duração da animação CSS
+        splashText.style.animationDuration = `${splashDuration}ms`;
+
+        splash.classList.remove('hidden');
+        profileScreen.classList.add('hidden');
+        app.classList.add('hidden');
+
+        // Depois do tempo do splash + fade-out, vai para os perfis
+        setTimeout(() => {
+            splash.classList.add('fade-out');
+            setTimeout(() => {
+                splash.classList.add('hidden');
+                showProfileScreen();
+            }, 800);
+        }, splashDuration);
+    } else {
+        splash.classList.add('hidden');
+        showProfileScreen();
+    }
+}
+
+function showProfileScreen() {
+    profileScreen.classList.remove('hidden');
+    app.classList.add('hidden');
+
+    profilesTitle.textContent = settingsData?.profiles_title || 'Quem está assistindo?';
+
+    profilesGrid.innerHTML = '';
+    profilesData.forEach(profile => {
+        profilesGrid.appendChild(createProfileCard(profile));
+    });
+}
+
+function createProfileCard(profile) {
+    const card = document.createElement('div');
+    card.className = 'profile-card';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'profile-avatar';
+
+    if (profile.avatar_url) {
+        const img = document.createElement('img');
+        img.src = profile.avatar_url;
+        img.alt = profile.name;
+        avatar.appendChild(img);
+    } else {
+        avatar.textContent = (profile.name || '?').charAt(0);
+    }
+
+    const name = document.createElement('div');
+    name.className = 'profile-name';
+    name.textContent = profile.name;
+
+    card.appendChild(avatar);
+    card.appendChild(name);
+
+    card.onclick = () => selectProfile(profile);
+    return card;
+}
+
+function selectProfile(profile) {
+    selectedProfile = profile;
+
+    // Guarda na sessão
+    try { sessionStorage.setItem('nossoflix_profile_id', profile.id); } catch (e) {}
+
+    // Atualiza avatar no header
+    headerAvatar.innerHTML = '';
+    if (profile.avatar_url) {
+        const img = document.createElement('img');
+        img.src = profile.avatar_url;
+        img.alt = profile.name;
+        headerAvatar.appendChild(img);
+    } else {
+        headerAvatar.textContent = (profile.name || '?').charAt(0);
+    }
+
+    // Troca de tela
+    profileScreen.classList.add('hidden');
+    app.classList.remove('hidden');
+
+    // Renderiza conteúdo
+    renderHero();
+    renderRows();
+
+    // Sobe pro topo
+    window.scrollTo(0, 0);
+}
+
+function backToProfiles() {
+    closeModalHandler();
+    selectedProfile = null;
+    try { sessionStorage.removeItem('nossoflix_profile_id'); } catch (e) {}
+
+    profileScreen.classList.remove('hidden');
+    app.classList.add('hidden');
+    window.scrollTo(0, 0);
+}
+
+// ===================================================================
+// CONFIGURAÇÕES
 // ===================================================================
 async function loadSettings() {
     const { data, error } = await supabase
@@ -48,52 +176,57 @@ async function loadSettings() {
         .single();
 
     if (error) {
-        console.warn('Não foi possível carregar as configurações:', error.message);
+        console.warn('Configurações não carregadas:', error.message);
         return;
     }
 
-    if (data) {
-        if (data.site_title) {
-            siteLogo.textContent = data.site_title;
-            document.title = data.site_title;
-        }
-        if (data.primary_color) {
-            document.documentElement.style.setProperty('--primary-color', data.primary_color);
-        }
-        if (data.footer_text) {
-            footerText.textContent = data.footer_text;
-        }
-        heroTitle.dataset.fallbackTitle = data.hero_title || '';
-        heroDescription.dataset.fallbackDescription = data.hero_description || '';
+    settingsData = data;
+
+    if (data.site_title) {
+        siteLogo.textContent = data.site_title;
+        document.title = data.site_title;
+    }
+    if (data.primary_color) {
+        document.documentElement.style.setProperty('--primary-color', data.primary_color);
+    }
+    if (data.footer_text) {
+        footerText.textContent = data.footer_text;
     }
 }
 
 // ===================================================================
-// CARREGA CONTEÚDO
+// PERFIS
+// ===================================================================
+async function loadProfiles() {
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('display_order', { ascending: true });
+
+    if (error) {
+        console.warn('Perfis não carregados:', error.message);
+        profilesData = [];
+        return;
+    }
+    profilesData = data || [];
+}
+
+// ===================================================================
+// CONTEÚDO (mídias + categorias)
 // ===================================================================
 async function loadContent() {
-    const { data: categories, error: catError } = await supabase
+    const { data: categories } = await supabase
         .from('categories')
         .select('*')
         .order('display_order', { ascending: true });
 
-    if (catError) {
-        console.error('Erro ao buscar categorias:', catError);
-        return;
-    }
-
-    const { data: mediaItems, error: mediaError } = await supabase
+    const { data: mediaItems } = await supabase
         .from('media_items')
         .select('*')
         .order('display_order', { ascending: true });
 
-    if (mediaError) {
-        console.warn('Erro ao buscar metadados:', mediaError.message);
-    }
-
     const { data: files, error: fileError } = await supabase
-        .storage
-        .from(BUCKET_NAME)
+        .storage.from(BUCKET_NAME)
         .list('', {
             limit: 1000,
             sortBy: { column: 'created_at', order: 'desc' }
@@ -101,14 +234,11 @@ async function loadContent() {
 
     if (fileError) {
         console.error('Erro ao listar arquivos:', fileError);
-        heroTitle.textContent = 'Ops! Algo deu errado.';
-        heroDescription.textContent = 'Não foi possível carregar as mídias.';
         return;
     }
 
     if (!files || files.length === 0) {
-        heroTitle.textContent = 'Adicione mídias!';
-        heroDescription.textContent = 'Faça login no painel adm para enviar fotos e vídeos.';
+        allMedia = [];
         return;
     }
 
@@ -137,33 +267,46 @@ async function loadContent() {
             };
         });
 
-    renderHero();
-    renderRows(categories || []);
+    // Guarda categorias para renderRows
+    window.__categories = categories || [];
 }
 
 // ===================================================================
-// RENDERIZA O HERO
+// RENDER: HERO
 // ===================================================================
 function renderHero() {
-    if (allMedia.length === 0) return;
+    // Remove vídeo anterior do hero
+    const oldVideo = heroSection.querySelector('.hero-bg-video');
+    if (oldVideo) oldVideo.remove();
 
-    let featured = allMedia.find(m => m.isFeatured);
-    if (!featured) {
-        featured = allMedia[Math.floor(Math.random() * allMedia.length)];
+    if (allMedia.length === 0) {
+        heroSection.style.backgroundImage = 'none';
+        heroTitle.textContent = 'Adicione mídias!';
+        heroDescription.textContent = 'Faça login no painel adm para enviar fotos e vídeos.';
+        playHeroBtn.style.display = 'none';
+        return;
     }
+
+    let featured = allMedia.find(m => m.isFeatured) || allMedia[0];
 
     if (featured.isVideo) {
         heroSection.style.backgroundImage = 'none';
-        heroSection.style.backgroundColor = '#141414';
+        const video = document.createElement('video');
+        video.className = 'hero-bg-video';
+        video.src = featured.url;
+        video.autoplay = true;
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.setAttribute('muted', '');
+        heroSection.insertBefore(video, heroSection.firstChild);
     } else {
         heroSection.style.backgroundImage = `url(${featured.url})`;
     }
 
-    heroTitle.textContent = featured.title
-        || heroTitle.dataset.fallbackTitle
-        || 'Nossa História';
+    heroTitle.textContent = featured.title || 'Nossa História';
     heroDescription.textContent = featured.description
-        || heroDescription.dataset.fallbackDescription
+        || settingsData?.hero_description
         || 'Uma coleção das nossas melhores memórias.';
 
     playHeroBtn.style.display = 'inline-flex';
@@ -171,10 +314,17 @@ function renderHero() {
 }
 
 // ===================================================================
-// RENDERIZA FILEIRAS
+// RENDER: FILEIRAS
 // ===================================================================
-function renderRows(categories) {
+function renderRows() {
     rowsContainer.innerHTML = '';
+
+    const categories = window.__categories || [];
+
+    if (allMedia.length === 0) {
+        rowsContainer.innerHTML = '<p style="text-align:center;padding:50px;">Nenhuma mídia disponível.</p>';
+        return;
+    }
 
     const groups = {};
     categories.forEach(cat => { groups[cat.id] = { cat, items: [] }; });
@@ -195,15 +345,8 @@ function renderRows(categories) {
     sortedGroups.forEach(group => {
         rowsContainer.appendChild(createRow(group.cat.name, group.items));
     });
-
-    if (sortedGroups.length === 0) {
-        rowsContainer.innerHTML = '<p style="text-align:center;padding:50px;">Nenhuma mídia disponível.</p>';
-    }
 }
 
-// ===================================================================
-// CRIA UMA FILEIRA
-// ===================================================================
 function createRow(title, items) {
     const row = document.createElement('div');
     row.className = 'row';
@@ -288,6 +431,8 @@ function setupEventListeners() {
         if (window.scrollY > 50) header.classList.add('scrolled');
         else header.classList.remove('scrolled');
     });
+
+    headerUser.addEventListener('click', backToProfiles);
 }
 
 init();
