@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monique & Gilney - A Série</title>
+    <title>Casalflix - Monique & Gilney</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -14,8 +14,7 @@
                         netflix: {
                             red: '#E50914',
                             dark: '#141414',
-                            gray: '#232323',
-                            lightgray: '#808080'
+                            gray: '#232323'
                         }
                     },
                     fontFamily: {
@@ -39,141 +38,215 @@
         ::-webkit-scrollbar-thumb:hover { background: #555; }
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Animação da Intro Netflix (TUDUM) */
+        @keyframes scaleN {
+            0% { transform: scale(0.6); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            80% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+        .intro-n { animation: scaleN 3.5s cubic-bezier(0.215, 0.61, 0.355, 1) forwards; }
     </style>
 </head>
-<body class="bg-netflix-dark min-h-screen">
+<body class="bg-netflix-dark min-h-screen selection:bg-netflix-red selection:text-white">
 
-    <!-- HEADER / NAVBAR -->
-    <header id="navbar" class="fixed top-0 z-50 w-full transition-colors duration-500 bg-gradient-to-b from-black/90 to-transparent px-4 md:px-12 py-4 flex items-center justify-between">
-        <div class="flex items-center space-x-10">
-            <span class="text-netflix-red font-display text-4xl tracking-wider cursor-pointer drop-shadow-md">CASALFLIX</span>
-            <nav class="hidden md:flex space-x-6 text-sm text-gray-300 font-medium tracking-wide">
-                <a href="#" class="hover:text-white transition font-semibold">Início</a>
-                <a href="#episodios" class="hover:text-white transition">Episódios & Momentos</a>
-                <a href="#galeria" class="hover:text-white transition">Nossa História</a>
-            </nav>
+    <!-- 1. TELA DE INTRO / ABERTURA NETFLIX (TUDUM) -->
+    <div id="intro-screen" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center cursor-pointer">
+        <div class="intro-n text-netflix-red font-display text-9xl md:text-[14rem] font-bold tracking-tighter select-none drop-shadow-[0_0_50px_rgba(229,9,20,0.8)]">
+            N
         </div>
-        <div class="flex items-center space-x-4">
-            <div class="flex items-center space-x-2 bg-black/50 px-3 py-1.5 rounded-md border border-white/10 backdrop-blur-sm">
-                <!-- FOTO DE PERFIL: midias/perfil.jpg -->
-                <img src="midias/perfil.jpg" alt="Perfil Monique & Gilney" class="w-7 h-7 rounded object-cover" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'">
-                <span class="text-xs font-semibold tracking-wide hidden sm:inline text-gray-200">Monique & Gilney</span>
-            </div>
-        </div>
-    </header>
+        <p class="absolute bottom-10 text-gray-500 text-xs font-mono uppercase tracking-widest animate-pulse">Clique em qualquer lugar para pular</p>
+    </div>
 
-    <!-- BANNER PRINCIPAL (HERO) -->
-    <section class="relative h-[85vh] md:h-[92vh] w-full flex items-center">
-        <!-- FOTO PRINCIPAL DO BANNER: midias/banner.jpg -->
-        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('midias/banner.jpg'), url('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1920&q=80');">
-            <div class="absolute inset-0 bg-gradient-to-r from-netflix-dark via-netflix-dark/70 to-transparent"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-netflix-dark via-transparent to-black/60"></div>
-        </div>
-
-        <div class="relative z-10 px-4 md:px-12 max-w-3xl mt-24 space-y-5">
-            <div class="flex items-center space-x-3 flex-wrap gap-y-1">
-                <span class="bg-netflix-red text-white text-xs font-bold px-2.5 py-1 rounded tracking-wider uppercase font-mono">CASAMENTO: 22/11/2026</span>
-                <span class="text-gray-300 text-xs font-mono uppercase tracking-widest bg-white/10 px-2.5 py-1 rounded backdrop-blur-sm">Série Original • Temporada Final</span>
-            </div>
-            <h1 class="text-5xl md:text-8xl font-display tracking-wide drop-shadow-lg text-white leading-none">Monique & Gilney</h1>
-            <p class="text-gray-200 text-sm md:text-lg font-serif italic max-w-2xl leading-relaxed">
-                "A contagem regressiva oficial para o dia mais esperado das nossas vidas. Prepare a pipoca e acompanhe os melhores momentos, viagens e risadas desta história que mal começou."
-            </p>
-            <div class="flex items-center space-x-4 pt-2">
-                <!-- VÍDEO DO TRAILER: midias/trailer.mp4 -->
-                <button onclick="abrirPlayer('midias/trailer.mp4', 'Trailer Oficial - Monique & Gilney')" class="flex items-center justify-center space-x-3 bg-white text-black font-bold px-7 py-3 rounded-md hover:bg-white/85 transition text-sm md:text-base tracking-wide shadow-lg">
-                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                    <span>Assistir Trailer</span>
-                </button>
-                <button onclick="abrirModalInfo()" class="flex items-center justify-center space-x-3 bg-gray-600/70 text-white font-bold px-7 py-3 rounded-md hover:bg-gray-600/50 transition text-sm md:text-base backdrop-blur-md border border-white/20 tracking-wide">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Detalhes do Casamento</span>
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- LISTAS / FILEIRAS -->
-    <main class="relative z-20 pb-28 -mt-20 md:-mt-28 space-y-12">
-
-        <!-- FILEIRA 1: EPISÓDIOS E VÍDEOS -->
-        <section id="episodios" class="px-4 md:px-12 space-y-4">
-            <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-tight flex items-center group font-sans">
-                Episódios & Momentos Marcantes
-            </h2>
-            <div class="flex space-x-5 overflow-x-auto hide-scroll pb-4 pt-2">
-                <!-- EPISÓDIO 1 -->
-                <div class="flex-none w-72 md:w-80 bg-netflix-gray rounded-lg overflow-hidden shadow-xl group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 border border-white/5">
-                    <div class="h-40 md:h-44 bg-cover bg-center relative" style="background-image: url('midias/thumb1.jpg'), url('https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=500&q=80');">
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
-                    </div>
-                    <div class="p-4 bg-[#181818] space-y-3">
-                        <div class="flex items-center justify-between">
-                            <!-- VÍDEO DO EP 1: midias/ep1.mp4 -->
-                            <button onclick="abrirPlayer('midias/ep1.mp4', 'Ep. 1: O Início de Tudo')" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 transition shadow-md">
-                                <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                            </button>
-                            <span class="text-xs text-emerald-400 font-mono font-semibold">100% Match</span>
-                        </div>
-                        <p class="text-xs md:text-sm text-gray-200 font-medium leading-snug">Ep. 1: O dia em que nossos caminhos se cruzaram de vez.</p>
-                    </div>
+    <!-- 2. TELA DE SELEÇÃO DE PERFIL -->
+    <div id="profile-screen" class="fixed inset-0 z-[90] bg-netflix-dark flex flex-col items-center justify-center p-4 transition-opacity duration-700 hidden">
+        <h1 class="text-3xl md:text-5xl font-sans font-medium text-white mb-10 tracking-tight text-center">Quem está assistindo?</h1>
+        
+        <div class="flex items-center justify-center gap-6 md:gap-12 flex-wrap">
+            <!-- Perfil Monique -->
+            <div onclick="selecionarPerfil('monique')" class="group flex flex-col items-center cursor-pointer">
+                <div class="w-28 h-28 md:w-40 md:h-40 rounded-md overflow-hidden border-2 border-transparent group-hover:border-white transition duration-300 transform group-hover:scale-105 shadow-2xl relative bg-neutral-800">
+                    <img src="midias/perfil-monique.jpg" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'" alt="Monique" class="w-full h-full object-cover">
                 </div>
+                <span class="mt-4 text-gray-400 group-hover:text-white text-base md:text-xl font-medium tracking-wide transition">Monique</span>
+            </div>
 
-                <!-- EPISÓDIO 2 -->
-                <div class="flex-none w-72 md:w-80 bg-netflix-gray rounded-lg overflow-hidden shadow-xl group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 border border-white/5">
-                    <div class="h-40 md:h-44 bg-cover bg-center relative" style="background-image: url('midias/thumb2.jpg'), url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80');">
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
-                    </div>
-                    <div class="p-4 bg-[#181818] space-y-3">
-                        <div class="flex items-center justify-between">
-                            <!-- VÍDEO DO EP 2: midias/ep2.mp4 -->
-                            <button onclick="abrirPlayer('midias/ep2.mp4', 'Ep. 2: A Viagem Inesquecível')" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 transition shadow-md">
-                                <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                            </button>
-                            <span class="text-xs text-emerald-400 font-mono font-semibold">99% Match</span>
-                        </div>
-                        <p class="text-xs md:text-sm text-gray-200 font-medium leading-snug">Ep. 2: Risadas, perrengues e paisagens lindas pelo mundo.</p>
-                    </div>
+            <!-- Perfil Gilney -->
+            <div onclick="selecionarPerfil('gilney')" class="group flex flex-col items-center cursor-pointer">
+                <div class="w-28 h-28 md:w-40 md:h-40 rounded-md overflow-hidden border-2 border-transparent group-hover:border-white transition duration-300 transform group-hover:scale-105 shadow-2xl relative bg-neutral-800">
+                    <img src="midias/perfil-gilney.jpg" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80'" alt="Gilney" class="w-full h-full object-cover">
+                </div>
+                <span class="mt-4 text-gray-400 group-hover:text-white text-base md:text-xl font-medium tracking-wide transition">Gilney</span>
+            </div>
+        </div>
+
+        <button onclick="pularParaSiteDirecto()" class="mt-16 px-6 py-2 border border-gray-600 text-gray-400 hover:border-white hover:text-white text-xs md:text-sm font-mono tracking-widest uppercase transition">
+            Gerenciar Perfis
+        </button>
+    </div>
+
+    <!-- 3. PLATAFORMA PRINCIPAL (CASALFLIX) -->
+    <div id="main-content" class="opacity-0 transition-opacity duration-1000">
+
+        <!-- NAVBAR -->
+        <header id="navbar" class="fixed top-0 z-50 w-full transition-colors duration-500 bg-gradient-to-b from-black/90 via-black/50 to-transparent px-4 md:px-12 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-8 md:space-x-12">
+                <span onclick="trocarPerfil()" class="text-netflix-red font-display text-4xl tracking-wider cursor-pointer drop-shadow-md select-none">CASALFLIX</span>
+                <nav class="hidden md:flex space-x-6 text-sm text-gray-300 font-medium tracking-wide">
+                    <a href="#" class="hover:text-white transition font-semibold">Início</a>
+                    <a href="#episodios" class="hover:text-white transition">Episódios & Momentos</a>
+                    <a href="#galeria" class="hover:text-white transition">Nossa História</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button onclick="trocarPerfil()" class="flex items-center space-x-2 bg-black/60 hover:bg-black/80 px-3 py-1.5 rounded-md border border-white/10 backdrop-blur-md transition">
+                    <img id="nav-profile-img" src="midias/perfil-monique.jpg" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'" class="w-7 h-7 rounded object-cover">
+                    <span id="nav-profile-name" class="text-xs font-semibold tracking-wide text-gray-200 hidden sm:inline">Monique</span>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- BANNER PRINCIPAL (HERO) -->
+        <section class="relative h-[85vh] md:h-[92vh] w-full flex items-center">
+            <!-- Imagem de fundo dinâmica -->
+            <div id="hero-banner" class="absolute inset-0 bg-cover bg-center transition-all duration-700">
+                <div class="absolute inset-0 bg-gradient-to-r from-netflix-dark via-netflix-dark/70 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-netflix-dark via-transparent to-black/60"></div>
+            </div>
+
+            <div class="relative z-10 px-4 md:px-12 max-w-3xl mt-20 space-y-5">
+                <div class="flex items-center space-x-3 flex-wrap gap-y-1">
+                    <span class="bg-netflix-red text-white text-xs font-bold px-2.5 py-1 rounded tracking-wider uppercase font-mono shadow-md">CASAMENTO: 22/11/2026</span>
+                    <span class="text-gray-300 text-xs font-mono uppercase tracking-widest bg-white/10 px-2.5 py-1 rounded backdrop-blur-sm">Temporada Final • Série Original</span>
+                </div>
+                
+                <h1 id="hero-title" class="text-5xl md:text-8xl font-display tracking-wide drop-shadow-lg text-white leading-none">Monique & Gilney</h1>
+                
+                <p id="hero-desc" class="text-gray-200 text-sm md:text-lg font-serif italic max-w-2xl leading-relaxed">
+                    "A contagem regressiva oficial para o dia mais esperado das nossas vidas. Prepare a pipoca e acompanhe os melhores momentos, viagens e risadas desta história que mal começou."
+                </p>
+
+                <div class="flex items-center space-x-4 pt-2">
+                    <button id="hero-play-btn" onclick="abrirPlayer('midias/trailer-monique.mp4', 'Trailer Oficial - Monique & Gilney')" class="flex items-center justify-center space-x-3 bg-white text-black font-bold px-7 py-3 rounded-md hover:bg-white/85 transition text-sm md:text-base tracking-wide shadow-lg">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <span>Assistir Trailer</span>
+                    </button>
+                    <button onclick="abrirModalInfo()" class="flex items-center justify-center space-x-3 bg-gray-600/70 text-white font-bold px-7 py-3 rounded-md hover:bg-gray-600/50 transition text-sm md:text-base backdrop-blur-md border border-white/20 tracking-wide">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Detalhes do Casamento</span>
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- FILEIRA 2: GALERIA DE FOTOS -->
-        <section id="galeria" class="px-4 md:px-12 space-y-4">
-            <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-tight flex items-center group font-sans">
-                Galeria de Memórias (Nossos Melhores Ângulos)
-            </h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                <!-- Foto 1: midias/foto1.jpg -->
-                <div class="bg-netflix-gray rounded-lg overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-lg border border-white/5">
-                    <div class="h-48 md:h-56 bg-cover bg-center" style="background-image: url('midias/foto1.jpg'), url('https://images.unsplash.com/photo-1494774157365-9e04c6720e47?auto=format&fit=crop&w=500&q=80');"></div>
-                    <div class="p-3 bg-[#181818] space-y-1">
-                        <p class="text-xs font-bold text-white truncate">Primeiro Encontro</p>
-                        <p class="text-[10px] text-gray-400 font-mono">Comédia romântica • 2024</p>
+        <!-- FILEIRAS / SEÇÕES DE CONTEÚDO -->
+        <main class="relative z-20 pb-28 -mt-20 md:-mt-28 space-y-12">
+
+            <!-- FILEIRA 1: EPISÓDIOS -->
+            <section id="episodios" class="px-4 md:px-12 space-y-4">
+                <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-tight font-sans">
+                    Episódios & Momentos Marcantes
+                </h2>
+                <div class="flex space-x-5 overflow-x-auto hide-scroll pb-4 pt-2">
+                    <!-- EP 1 -->
+                    <div class="flex-none w-72 md:w-80 bg-netflix-gray rounded-lg overflow-hidden shadow-xl group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 border border-white/5">
+                        <div class="h-40 md:h-44 bg-cover bg-center relative" style="background-image: url('midias/thumb1.jpg'), url('https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=500&q=80');">
+                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+                        </div>
+                        <div class="p-4 bg-[#181818] space-y-3">
+                            <div class="flex items-center justify-between">
+                                <button onclick="abrirPlayer('midias/ep1.mp4', 'Ep. 1: O Início de Tudo')" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 transition shadow-md">
+                                    <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </button>
+                                <span class="text-xs text-emerald-400 font-mono font-semibold">100% Match</span>
+                            </div>
+                            <p class="text-xs md:text-sm text-gray-200 font-medium leading-snug">Ep. 1: O dia em que nossos caminhos se cruzaram de vez.</p>
+                        </div>
+                    </div>
+
+                    <!-- EP 2 -->
+                    <div class="flex-none w-72 md:w-80 bg-netflix-gray rounded-lg overflow-hidden shadow-xl group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 border border-white/5">
+                        <div class="h-40 md:h-44 bg-cover bg-center relative" style="background-image: url('midias/thumb2.jpg'), url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80');">
+                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+                        </div>
+                        <div class="p-4 bg-[#181818] space-y-3">
+                            <div class="flex items-center justify-between">
+                                <button onclick="abrirPlayer('midias/ep2.mp4', 'Ep. 2: A Viagem Inesquecível')" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 transition shadow-md">
+                                    <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </button>
+                                <span class="text-xs text-emerald-400 font-mono font-semibold">99% Match</span>
+                            </div>
+                            <p class="text-xs md:text-sm text-gray-200 font-medium leading-snug">Ep. 2: Risadas, perrengues e paisagens lindas pelo mundo.</p>
+                        </div>
+                    </div>
+
+                    <!-- EP 3 -->
+                    <div class="flex-none w-72 md:w-80 bg-netflix-gray rounded-lg overflow-hidden shadow-xl group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 border border-white/5">
+                        <div class="h-40 md:h-44 bg-cover bg-center relative" style="background-image: url('midias/thumb3.jpg'), url('https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&w=500&q=80');">
+                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+                        </div>
+                        <div class="p-4 bg-[#181818] space-y-3">
+                            <div class="flex items-center justify-between">
+                                <button onclick="abrirPlayer('midias/ep3.mp4', 'Ep. 3: O Grande Pedido')" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200 transition shadow-md">
+                                    <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </button>
+                                <span class="text-xs text-amber-400 font-mono font-semibold uppercase tracking-wider">Especial</span>
+                            </div>
+                            <p class="text-xs md:text-sm text-gray-200 font-medium leading-snug">Ep. 3: O momento em que dissemos o primeiro "sim".</p>
+                        </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- Foto 2: midias/foto2.jpg -->
-                <div class="bg-netflix-gray rounded-lg overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-lg border border-white/5">
-                    <div class="h-48 md:h-56 bg-cover bg-center" style="background-image: url('midias/foto2.jpg'), url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=500&q=80');"></div>
-                    <div class="p-3 bg-[#181818] space-y-1">
-                        <p class="text-xs font-bold text-white truncate">Noivado Oficial</p>
-                        <p class="text-[10px] text-gray-400 font-mono">Drama emocionante • 2025</p>
+            <!-- FILEIRA 2: GALERIA DE FOTOS -->
+            <section id="galeria" class="px-4 md:px-12 space-y-4">
+                <h2 class="text-xl md:text-2xl font-bold text-gray-100 tracking-tight font-sans">
+                    Galeria de Memórias (Nossos Melhores Ângulos)
+                </h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    <div class="bg-netflix-gray rounded-lg overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-lg border border-white/5">
+                        <div class="h-48 md:h-56 bg-cover bg-center" style="background-image: url('midias/galeria1.jpg'), url('https://images.unsplash.com/photo-1494774157365-9e04c6720e47?auto=format&fit=crop&w=500&q=80');"></div>
+                        <div class="p-3 bg-[#181818] space-y-1">
+                            <p class="text-xs font-bold text-white truncate">Primeiro Encontro</p>
+                            <p class="text-[10px] text-gray-400 font-mono">Comédia romântica • 2024</p>
+                        </div>
+                    </div>
+                    <div class="bg-netflix-gray rounded-lg overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-lg border border-white/5">
+                        <div class="h-48 md:h-56 bg-cover bg-center" style="background-image: url('midias/galeria2.jpg'), url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=500&q=80');"></div>
+                        <div class="p-3 bg-[#181818] space-y-1">
+                            <p class="text-xs font-bold text-white truncate">Noivado Oficial</p>
+                            <p class="text-[10px] text-gray-400 font-mono">Drama emocionante • 2025</p>
+                        </div>
+                    </div>
+                    <div class="bg-netflix-gray rounded-lg overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-lg border border-white/5">
+                        <div class="h-48 md:h-56 bg-cover bg-center" style="background-image: url('midias/galeria3.jpg'), url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=500&q=80');"></div>
+                        <div class="p-3 bg-[#181818] space-y-1">
+                            <p class="text-xs font-bold text-white truncate">Férias na Praia</p>
+                            <p class="text-[10px] text-gray-400 font-mono">Aventura • 2025</p>
+                        </div>
+                    </div>
+                    <div class="bg-netflix-gray rounded-lg overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-lg border border-white/5">
+                        <div class="h-48 md:h-56 bg-cover bg-center" style="background-image: url('midias/galeria4.jpg'), url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80');"></div>
+                        <div class="p-3 bg-[#181818] space-y-1">
+                            <p class="text-xs font-bold text-white truncate">Domingo em Casa</p>
+                            <p class="text-[10px] text-gray-400 font-mono">Reality Show • Diário</p>
+                        </div>
+                    </div>
+                    <div class="bg-netflix-gray rounded-lg overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-lg border border-white/5">
+                        <div class="h-48 md:h-56 bg-cover bg-center" style="background-image: url('midias/galeria5.jpg'), url('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=80');"></div>
+                        <div class="p-3 bg-[#181818] space-y-1">
+                            <p class="text-xs font-bold text-white truncate">Rumo ao Altar</p>
+                            <p class="text-[10px] text-gray-400 font-mono">Documentário • 2026</p>
+                        </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- Foto 3: midias/foto3.jpg -->
-                <div class="bg-netflix-gray rounded-lg overflow-hidden group relative cursor-pointer transform transition duration-300 hover:scale-105 hover:z-30 shadow-lg border border-white/5">
-                    <div class="h-48 md:h-56 bg-cover bg-center" style="background-image: url('midias/foto3.jpg'), url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=500&q=80');"></div>
-                    <div class="p-3 bg-[#181818] space-y-1">
-                        <p class="text-xs font-bold text-white truncate">Férias na Praia</p>
-                        <p class="text-[10px] text-gray-400 font-mono">Aventura • 2025</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
+        </main>
+    </div>
 
     <!-- MODAL VÍDEO -->
     <div id="videoModal" class="fixed inset-0 z-50 bg-black/90 hidden items-center justify-center p-4 backdrop-blur-md">
@@ -210,8 +283,108 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE COMPORTAMENTO -->
+    <!-- SCRIPTS E INTERATIVIDADE -->
     <script>
+        // Dados personalizados para cada perfil
+        const perfisData = {
+            monique: {
+                nome: "Monique",
+                avatar: "midias/perfil-monique.jpg",
+                avatarFallback: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+                banner: "midias/banner-monique.jpg",
+                bannerFallback: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1920&q=80",
+                trailer: "midias/trailer-monique.mp4",
+                desc: "A contagem regressiva oficial para o dia mais esperado das nossas vidas. Acompanhe sob o olhar da Monique os melhores momentos, risadas e aventuras a dois."
+            },
+            gilney: {
+                nome: "Gilney",
+                avatar: "midias/perfil-gilney.jpg",
+                avatarFallback: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+                banner: "midias/banner-gilney.jpg",
+                bannerFallback: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1920&q=80",
+                trailer: "midias/trailer-gilney.mp4",
+                desc: "Rumo ao altar em 22/11/2026! Acompanhe a versão do Gilney sobre os bastidores da história de amor mais divertida de todas."
+            }
+        };
+
+        // Efeito Sonoro TUDUM da Netflix via Web Audio API (sem arquivo externo)
+        function playTudum() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc1.type = 'triangle';
+                osc2.type = 'sine';
+
+                osc1.frequency.setValueAtTime(110, ctx.currentTime);
+                osc1.frequency.exponentialRampToValueAtTime(55, ctx.currentTime + 0.8);
+
+                osc2.frequency.setValueAtTime(220, ctx.currentTime);
+                osc2.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.8);
+
+                gain.gain.setValueAtTime(0.5, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc1.start();
+                osc2.start();
+                osc1.stop(ctx.currentTime + 1.2);
+                osc2.stop(ctx.currentTime + 1.2);
+            } catch (e) {
+                console.log("Áudio bloqueado pelo navegador até o clique do usuário.");
+            }
+        }
+
+        // Lógica de Troca de Telas (Abertura -> Perfil -> Plataforma)
+        document.getElementById('intro-screen').addEventListener('click', encerrarIntro);
+        setTimeout(encerrarIntro, 3500);
+
+        function encerrarIntro() {
+            const intro = document.getElementById('intro-screen');
+            if (!intro.classList.contains('hidden')) {
+                playTudum();
+                intro.classList.add('hidden');
+                document.getElementById('profile-screen').classList.remove('hidden');
+            }
+        }
+
+        function selecionarPerfil(perfilKey) {
+            const perfil = perfisData[perfilKey];
+            
+            // Atualiza Header
+            document.getElementById('nav-profile-name').innerText = perfil.nome;
+            const imgNav = document.getElementById('nav-profile-img');
+            imgNav.src = perfil.avatar;
+            imgNav.onerror = () => { imgNav.src = perfil.avatarFallback; };
+
+            // Atualiza Hero Banner
+            const heroBanner = document.getElementById('hero-banner');
+            heroBanner.style.backgroundImage = `url('${perfil.banner}'), url('${perfil.bannerFallback}')`;
+            
+            document.getElementById('hero-desc').innerText = `"${perfil.desc}"`;
+            document.getElementById('hero-play-btn').setAttribute('onclick', `abrirPlayer('${perfil.trailer}', 'Trailer Oficial - Perfil ${perfil.nome}')`);
+
+            // Transição para a plataforma principal
+            document.getElementById('profile-screen').classList.add('hidden');
+            const mainContent = document.getElementById('main-content');
+            mainContent.classList.remove('opacity-0');
+        }
+
+        function trocarPerfil() {
+            document.getElementById('main-content').classList.add('opacity-0');
+            document.getElementById('profile-screen').classList.remove('hidden');
+        }
+
+        function pularParaSiteDirecto() {
+            selecionarPerfil('monique');
+        }
+
+        // Controle da Navbar no Scroll
         window.addEventListener('scroll', function() {
             const nav = document.getElementById('navbar');
             if (window.scrollY > 50) {
@@ -221,6 +394,7 @@
             }
         });
 
+        // Controles dos Modais
         function abrirPlayer(urlVideo, titulo) {
             const modal = document.getElementById('videoModal');
             const video = document.getElementById('playerVideo');
