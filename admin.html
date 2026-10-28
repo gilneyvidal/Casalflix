@@ -1,180 +1,586 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel ADM - Nossoflix</title>
-    <link rel="stylesheet" href="admin.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0D1014" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Confirmaê" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Painel do Anfitrião | Confirmaê</title>
+
+  <meta
+    name="description"
+    content="Gerencie convidados, confirmações, QR Codes e configurações do seu evento."
+  />
+
+  <link rel="icon" type="image/png" href="assets/img/confirmae-icon.png" />
+  <link rel="apple-touch-icon" href="assets/img/confirmae-icon.png" />
+  <link rel="stylesheet" href="assets/css/style.css?v=pin-fix-4" />
 </head>
-<body>
-    <!-- TELA DE LOGIN -->
-    <div id="login-screen" class="screen">
-        <div class="login-container">
-            <h1 class="logo">NOSSOFLIX <span>ADM</span></h1>
-            <p>Acesso restrito</p>
-            <form id="login-form">
-                <div class="input-group">
-                    <label for="email">E-mail</label>
-                    <input type="email" id="email" placeholder="seu@email.com" required autocomplete="email">
-                </div>
-                <div class="input-group">
-                    <label for="password">Senha</label>
-                    <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
-                </div>
-                <button type="submit" class="btn-primary">Entrar</button>
-                <div id="login-error" class="error-message"></div>
-            </form>
+
+<body class="page-admin">
+  <header class="site-header">
+    <div class="container header-content">
+      <a href="index.html" class="brand" aria-label="Página inicial do Confirmaê">
+        <span class="brand-icon">✓</span>
+        <span class="brand-text">Confirmaê</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Menu principal">
+        <a href="index.html">Início</a>
+        <a href="index.html#contratar">Criar evento</a>
+        <a href="admin.html">Painel do anfitrião</a>
+        <a href="portaria.html">Portaria</a>
+        <a href="master.html">Master</a>
+        <a href="manual.html">Manual</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <section class="container dashboard-header">
+      <div>
+        <span class="eyebrow">Painel do anfitrião</span>
+        <h1>Acesse seu evento</h1>
+
+        <p>
+          Informe o ID e o PIN do painel para personalizar seu evento,
+          cadastrar convidados e acompanhar confirmações.
+        </p>
+
+        <div class="hero-actions">
+          <a href="index.html#contratar" class="btn btn-primary">
+            Criar/contratar novo evento
+          </a>
         </div>
+      </div>
+
+      <div class="event-selector-card">
+        <label for="eventIdInput">ID do evento</label>
+
+        <input
+          type="text"
+          id="eventIdInput"
+          value="evento-demo"
+          autocomplete="off"
+          aria-label="ID do evento"
+        />
+
+        <label for="eventPanelPinInput">PIN do painel</label>
+
+        <input
+          type="password"
+          id="eventPanelPinInput"
+          placeholder="Digite o PIN do painel"
+          autocomplete="current-password"
+          aria-label="PIN do painel"
+        />
+
+        <small id="panelPinHelpText" role="status" aria-live="polite">
+          Digite o PIN recebido pelo WhatsApp para acessar seu evento.
+        </small>
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          id="loadEventButton"
+        >
+          Acessar evento
+        </button>
+      </div>
+    </section>
+
+    <section class="container" id="accessLockedSection" hidden>
+      <article class="panel-card">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">Evento ainda não liberado</span>
+            <h2>Liberação necessária</h2>
+          </div>
+        </div>
+
+        <div class="features-grid">
+          <article class="feature-card">
+            <div class="feature-icon">ID</div>
+            <h3 id="lockedEventIdText">Evento</h3>
+            <p>
+              Guarde esse identificador. Ele será usado para acessar seu painel.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">PIX</div>
+            <h3 id="unlockPriceText">Planos disponíveis</h3>
+            <p>
+              <strong>Banco:</strong>
+              <span id="pixBankText">Mercado Pago</span><br />
+
+              <strong>Chave:</strong>
+              <span id="pixKeyText">11968649673</span><br />
+
+              <strong>Nome:</strong>
+              <span id="pixHolderText">Gilney Wesley Aparecido Vidal</span>
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">WA</div>
+            <h3>Confirmação de pagamento</h3>
+            <p>
+              Após o pagamento, envie o comprovante pelo WhatsApp para conferência
+              e liberação manual.
+            </p>
+          </article>
+        </div>
+
+        <div class="hero-actions">
+          <a
+            href="#"
+            class="btn btn-primary"
+            id="unlockWhatsappLink"
+            target="_blank"
+            rel="noopener"
+          >
+            Falar no WhatsApp
+          </a>
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="copyPixButton"
+          >
+            Copiar chave Pix
+          </button>
+
+          <a href="index.html#contratar" class="btn btn-secondary">
+            Ver planos
+          </a>
+        </div>
+      </article>
+    </section>
+
+    <section
+      class="container stats-grid"
+      data-event-workspace
+      hidden
+      aria-label="Resumo dos convidados"
+    >
+      <article class="stat-card">
+        <span>Total</span>
+        <strong id="totalGuests">0</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Aguardando</span>
+        <strong id="waitingGuests">0</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Confirmados</span>
+        <strong id="acceptedGuests">0</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Recusados</span>
+        <strong id="declinedGuests">0</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Presentes</span>
+        <strong id="presentGuests">0</strong>
+      </article>
+    </section>
+
+    <section class="container" data-event-workspace hidden>
+      <article class="panel-card">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">Personalização</span>
+            <h2>Dados do evento</h2>
+          </div>
+        </div>
+
+        <form class="guest-form" id="eventConfigForm">
+          <div class="form-group">
+            <label for="eventNameInput">Nome do evento</label>
+            <input
+              type="text"
+              id="eventNameInput"
+              placeholder="Ex: Casamento João & Maria"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="eventTypeInput">Tipo do evento</label>
+            <input
+              type="text"
+              id="eventTypeInput"
+              placeholder="Ex: Casamento, aniversário ou formatura"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="eventHostInput">Nome do anfitrião</label>
+            <input
+              type="text"
+              id="eventHostInput"
+              placeholder="Ex: João & Maria"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="eventDateIsoInput">Data oficial do evento</label>
+            <input type="date" id="eventDateIsoInput" />
+          </div>
+
+          <div class="form-group">
+            <label for="eventDateInput">Data exibida no convite</label>
+            <input
+              type="text"
+              id="eventDateInput"
+              placeholder="Ex: 20 de dezembro de 2026"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="eventTimeInput">Horário</label>
+            <input
+              type="text"
+              id="eventTimeInput"
+              placeholder="Ex: 19h30"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="eventLocationInput">Local</label>
+            <input
+              type="text"
+              id="eventLocationInput"
+              placeholder="Ex: Espaço Jardim Imperial"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="eventIntroInput">Mensagem do convite</label>
+            <input
+              type="text"
+              id="eventIntroInput"
+              placeholder="Mensagem para os convidados"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            Salvar dados do evento
+          </button>
+        </form>
+      </article>
+    </section>
+
+    <section
+      class="container dashboard-grid"
+      data-event-workspace
+      hidden
+      style="margin-top: 24px;"
+    >
+      <article class="panel-card">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">Novo convidado</span>
+            <h2>Cadastrar convite</h2>
+          </div>
+        </div>
+
+        <form class="guest-form" id="guestForm">
+          <div class="form-group">
+            <label for="guestNameInput">Nome do convidado</label>
+            <input
+              type="text"
+              id="guestNameInput"
+              placeholder="Ex: Maria Oliveira"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="guestPhoneInput">Telefone</label>
+            <input
+              type="tel"
+              id="guestPhoneInput"
+              placeholder="Ex: (11) 99999-9999"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="guestEmailInput">E-mail</label>
+            <input
+              type="email"
+              id="guestEmailInput"
+              placeholder="Ex: maria@email.com"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="guestCompanionsInput">Acompanhantes permitidos</label>
+            <input
+              type="number"
+              id="guestCompanionsInput"
+              min="0"
+              value="0"
+            />
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            Criar convite
+          </button>
+        </form>
+      </article>
+
+      <article class="panel-card panel-card-large">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">Lista de convidados</span>
+            <h2>Status dos convites</h2>
+          </div>
+
+          <div class="table-actions">
+            <button
+              type="button"
+              class="btn btn-secondary btn-small"
+              id="exportAllGuestsButton"
+            >
+              Exportar todos
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-secondary btn-small"
+              id="exportAcceptedGuestsButton"
+            >
+              Exportar confirmados
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-secondary btn-small"
+              id="exportPresentGuestsButton"
+            >
+              Exportar presentes
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-secondary btn-small"
+              id="exportDeclinedGuestsButton"
+            >
+              Exportar recusados
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-secondary btn-small"
+              id="resetDemoButton"
+            >
+              Restaurar demo
+            </button>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="guest-table">
+            <thead>
+              <tr>
+                <th>Convidado</th>
+                <th>Contato</th>
+                <th>Status</th>
+                <th>Convite</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+
+            <tbody id="guestTableBody">
+              <tr>
+                <td colspan="5">Aguardando acesso ao evento...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div class="modal-overlay" id="qrModal" aria-hidden="true">
+    <div
+      class="modal-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="qrModalTitle"
+    >
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow">Convite individual</span>
+          <h2 id="qrModalTitle">QR Code do convidado</h2>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          id="closeQrModal"
+          aria-label="Fechar modal"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="qr-modal-body">
+        <div class="qr-guest-info">
+          <span class="guest-avatar" id="qrGuestInitial">C</span>
+
+          <div>
+            <strong id="qrGuestName">Convidado</strong>
+            <small id="qrGuestLink">Link do convite</small>
+          </div>
+        </div>
+
+        <div class="qr-code-box" id="qrCodeBox"></div>
+
+        <div class="qr-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="copyQrLinkButton"
+          >
+            Copiar link
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-primary"
+            id="downloadQrButton"
+          >
+            Baixar QR Code
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- PAINEL -->
-    <div id="admin-panel" class="screen hidden">
-        <header class="admin-header">
-            <h1 class="logo">NOSSOFLIX <span>ADM</span></h1>
-            <div>
-                <span id="user-email" class="user-email"></span>
-                <button id="logout-btn" class="btn-logout">Sair</button>
-            </div>
-        </header>
+  <footer class="site-footer">
+    <div class="container footer-content footer-content-branded">
+      <div class="footer-brand-note">
+        <p>© 2026 Confirmaê.</p>
+        <p>Confirmaê é um sistema desenvolvido por Vidal Design Solutions.</p>
+      </div>
 
-        <main class="admin-main">
-            <nav class="tabs">
-                <button class="tab-btn active" data-tab="upload">📤 Enviar</button>
-                <button class="tab-btn" data-tab="manage">🖼️ Gerenciar</button>
-                <button class="tab-btn" data-tab="categories">📂 Categorias</button>
-                <button class="tab-btn" data-tab="profiles">👥 Perfis</button>
-                <button class="tab-btn" data-tab="splash">🎬 Abertura</button>
-                <button class="tab-btn" data-tab="settings">🎨 Personalizar</button>
-            </nav>
-
-            <!-- ABA UPLOAD -->
-            <section class="tab-content active" id="tab-upload">
-                <h2>Enviar Nova Mídia</h2>
-                <p class="muted">Selecione um ou mais arquivos. Você pode enviar várias fotos/vídeos de uma vez.</p>
-                <form id="upload-form">
-                    <div class="input-group">
-                        <label for="file-input">Arquivos (fotos ou vídeos)</label>
-                        <input type="file" id="file-input" multiple accept="image/*,video/*" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="upload-category">Categoria (fileira)</label>
-                        <select id="upload-category"></select>
-                    </div>
-                    <div class="input-group">
-                        <label for="upload-titles">Títulos (opcional)</label>
-                        <input type="text" id="upload-titles" placeholder="Ex: Primeira viagem, Nosso aniversário">
-                        <small class="muted">Separe por vírgula na mesma ordem dos arquivos.</small>
-                    </div>
-                    <button type="submit" class="btn-primary" id="upload-btn">Enviar Arquivos</button>
-                </form>
-                <div id="upload-progress" class="progress-container hidden">
-                    <div class="progress-bar" id="progress-bar"></div>
-                </div>
-                <div id="upload-status" class="status-message"></div>
-            </section>
-
-            <!-- ABA GERENCIAR -->
-            <section class="tab-content" id="tab-manage">
-                <h2>Gerenciar Mídias</h2>
-                <p class="muted">
-                    Edite títulos, mude categorias, marque <strong>★ DESTAQUE</strong> e exclua.<br>
-                    💡 <strong>Vídeo principal do site:</strong> marque <strong>apenas um</strong> item como "Destaque do hero". 
-                    Se for um vídeo, ele roda automaticamente como plano de fundo; se for foto, vira o plano de fundo fixo.
-                </p>
-                <div id="media-list-container">
-                    <p>Carregando mídias...</p>
-                </div>
-            </section>
-
-            <!-- ABA CATEGORIAS -->
-            <section class="tab-content" id="tab-categories">
-                <h2>Categorias (Fileiras)</h2>
-                <p class="muted">As categorias viram as "fileiras" horizontais do site.</p>
-                <form id="category-form" class="inline-form">
-                    <input type="text" id="new-category-name" placeholder="Nome da nova categoria" required>
-                    <button type="submit" class="btn-primary">Adicionar</button>
-                </form>
-                <div id="categories-list"></div>
-            </section>
-
-            <!-- ABA PERFIS -->
-            <section class="tab-content" id="tab-profiles">
-                <h2>Perfis (tela inicial)</h2>
-                <p class="muted">
-                    Cada perfil vira um card na tela "Quem está assistindo?". A foto é opcional — 
-                    se não tiver, aparece a inicial do nome.
-                </p>
-                <form id="profile-form" class="inline-form">
-                    <input type="text" id="new-profile-name" placeholder="Nome do novo perfil" required>
-                    <button type="submit" class="btn-primary">Adicionar Perfil</button>
-                </form>
-                <div id="profiles-list" class="profiles-admin-grid"></div>
-            </section>
-
-            <!-- ABA SPLASH -->
-            <section class="tab-content" id="tab-splash">
-                <h2>Abertura do Site (Splash)</h2>
-                <p class="muted">
-                    Aquela animação que aparece antes da seleção de perfis. Personalize o texto e a duração.
-                </p>
-                <form id="splash-form">
-                    <div class="input-group">
-                        <label>
-                            <input type="checkbox" id="splash-enabled"> Mostrar abertura animada ao entrar no site
-                        </label>
-                    </div>
-                    <div class="input-group">
-                        <label for="splash-text-input">Texto da Abertura</label>
-                        <input type="text" id="splash-text-input" maxlength="30" placeholder="NOSSOFLIX">
-                        <small class="muted">Recomendado: até 12 caracteres para não quebrar o layout.</small>
-                    </div>
-                    <div class="input-group">
-                        <label for="splash-duration-input">Duração (milissegundos)</label>
-                        <input type="number" id="splash-duration-input" min="1500" max="8000" step="100">
-                        <small class="muted">Recomendado: entre 2500 e 4500 ms.</small>
-                    </div>
-                    <button type="submit" class="btn-primary">Salvar Abertura</button>
-                    <div id="splash-status" class="status-message"></div>
-                </form>
-            </section>
-
-            <!-- ABA PERSONALIZAR -->
-            <section class="tab-content" id="tab-settings">
-                <h2>Personalização Geral do Site</h2>
-                <form id="settings-form">
-                    <div class="input-group">
-                        <label for="site-title">Título do Site (Logo)</label>
-                        <input type="text" id="site-title">
-                    </div>
-                    <div class="input-group">
-                        <label for="hero-title-text">Título do Destaque (Hero) — padrão</label>
-                        <input type="text" id="hero-title-text">
-                        <small class="muted">Usado apenas quando a mídia em destaque não tem título próprio.</small>
-                    </div>
-                    <div class="input-group">
-                        <label for="hero-description-text">Descrição do Destaque — padrão</label>
-                        <textarea id="hero-description-text" rows="3"></textarea>
-                    </div>
-                    <div class="input-group">
-                        <label for="profiles-title">Título da tela de seleção de perfis</label>
-                        <input type="text" id="profiles-title">
-                    </div>
-                    <div class="input-group">
-                        <label for="primary-color">Cor Principal</label>
-                        <input type="color" id="primary-color">
-                    </div>
-                    <div class="input-group">
-                        <label for="footer-text-input">Texto do Rodapé</label>
-                        <input type="text" id="footer-text-input">
-                    </div>
-                    <button type="submit" class="btn-primary">Salvar Personalizações</button>
-                    <div id="settings-status" class="status-message"></div>
-                </form>
-            </section>
-        </main>
+      <a
+        href="http://www.vidaldesignsolutions.com.br"
+        class="developer-badge"
+        target="_blank"
+        rel="noopener"
+        aria-label="Acessar site da Vidal Design Solutions"
+      >
+        <span>Desenvolvido por</span>
+        <img
+          src="assets/img/vidal-design-logo.png"
+          alt="Vidal Design Solutions"
+        />
+      </a>
     </div>
+  </footer>
 
-    <script type="module" src="admin.js"></script>
+  <script src="assets/js/theme.js?v=pin-fix-4"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <script>
+    (function preparePanelAccess() {
+      const eventIdInput = document.getElementById("eventIdInput");
+      const eventPanelPinInput = document.getElementById("eventPanelPinInput");
+      const panelPinHelpText = document.getElementById("panelPinHelpText");
+      const loadEventButton = document.getElementById("loadEventButton");
+
+      const params = new URLSearchParams(window.location.search);
+      const requestedEventId = params.get("evento");
+      const requestedPin = params.get("pin");
+
+      if (requestedEventId) {
+        eventIdInput.value = requestedEventId;
+      }
+
+      if (requestedPin) {
+        eventPanelPinInput.value = requestedPin;
+      }
+
+      let adminModuleLoaded = false;
+      let adminModulePromise = null;
+
+      loadEventButton.addEventListener("click", async function () {
+        if (adminModuleLoaded) {
+          return;
+        }
+
+        const eventId = eventIdInput.value.trim();
+        const pin = eventPanelPinInput.value.trim();
+
+        if (!eventId) {
+          panelPinHelpText.textContent = "Informe o ID do evento.";
+          eventIdInput.focus();
+          return;
+        }
+
+        if (eventId !== "evento-demo" && !pin) {
+          panelPinHelpText.textContent =
+            "Digite o PIN recebido pelo WhatsApp antes de continuar.";
+
+          eventPanelPinInput.focus();
+          return;
+        }
+
+        if (adminModulePromise) {
+          return;
+        }
+
+        if (eventId !== "evento-demo" && pin) {
+          sessionStorage.setItem(
+            `confirmae_panel_pin_${eventId}`,
+            pin
+          );
+        }
+
+        loadEventButton.disabled = true;
+        loadEventButton.textContent = "Preparando acesso...";
+        panelPinHelpText.textContent = "Preparando a validação do painel...";
+
+        try {
+          adminModulePromise = import("./assets/js/admin.js?v=pin-fix-4");
+
+          await adminModulePromise;
+          adminModuleLoaded = true;
+
+          // Recupera o PIN para manter o campo preenchido.
+          eventPanelPinInput.value = pin;
+        } catch (error) {
+          console.error("Falha ao carregar o painel:", error);
+
+          adminModulePromise = null;
+          loadEventButton.disabled = false;
+          loadEventButton.textContent = "Acessar evento";
+
+          panelPinHelpText.textContent =
+            "Não foi possível carregar o painel. Atualize a página e tente novamente.";
+        }
+      });
+    })();
+  </script>
+
+  <script src="assets/js/pwa.js?v=pwa-1"></script>
 </body>
 </html>
